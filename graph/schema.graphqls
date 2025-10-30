@@ -1,0 +1,89 @@
+scalar Time
+scalar UUID
+
+enum SortOrder {
+  RATING
+  NEW
+  OLD
+}
+
+type PageInfo {
+  hasNextPage: Boolean!
+  endCursor: String
+}
+
+# Post
+
+type PostEdge {
+  cursor: String!
+  node: Post!
+}
+
+type PostConnection {
+  edges: [PostEdge!]!
+  pageInfo: PageInfo!
+}
+
+type Post {
+  id: ID!
+  authorID: UUID!
+  title: String!
+  content: String!
+  createdAt: Time!
+  rating: Int!
+  commentsCount: Int!
+  commentsRestricted: Boolean!
+  comments(sort: SortOrder = RATING, limit: Int = 6, cursor: String, depth: Int = 2): CommentConnection!
+}
+
+# Comment
+
+type CommentEdge {
+  cursor: String!
+  node: Comment!
+}
+
+type CommentConnection {
+  edges: [CommentEdge!]!
+  pageInfo: PageInfo!
+}
+
+type Comment {
+  id: ID!
+  postID: ID!
+  authorID: UUID!
+  text: String!
+  createdAt: Time!
+  rating: Int!
+  parentID: ID
+  children(sort: SortOrder = RATING, limit: Int = 6, cursor: String, depth: Int = 2): CommentConnection!
+  parentTree(depth: Int = 1): [Comment!]!
+}
+
+
+type Mutation {
+  createPost(authorID: UUID!, title: String!, content: String!): Post!
+  updatePost(id: ID!, title: String, content: String): Post!
+  deletePost(id: ID!): Boolean!
+  setCommentsRestricted(postID: ID!, restricted: Boolean!): Post!
+  
+  upvotePost(id: ID!, voterID: UUID!): Post!
+  downvotePost(id: ID!, voterID: UUID!): Post!
+
+  createComment(postID: ID!, authorID: UUID!, text: String!, parentID: ID): Comment!
+  updateComment(id: ID!, text: String!): Comment!
+  deleteComment(id: ID!): Boolean!
+
+  upvoteComment(id: ID!, voterID: UUID!): Comment!
+  downvoteComment(id: ID!, voterID: UUID!): Comment!
+}
+
+type Query {
+  post(id: ID!): Post
+  posts(sort: SortOrder = NEW, limit: Int = 10, cursor: String): PostConnection!
+  comment(id: ID!): Comment
+}
+
+type Subscription {
+  newComment(postID: ID!): Comment!
+}
