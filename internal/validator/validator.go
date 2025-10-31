@@ -13,24 +13,60 @@ const (
 )
 
 var (
-	EmptyTitleErr     = errors.New("post title cannot be empty")
-	EmptyContentErr   = errors.New("post content cannot be empty")
-	TooLongTitleErr   = errors.New("post title cannot be longer than " + strconv.Itoa(MaxTitleLen) + " characters")
-	TooLongContentErr = errors.New("post content cannot be longer than " + strconv.Itoa(MaxContentLen) + " characters")
+	EmptyTitleErr      = errors.New("post title cannot be empty")
+	EmptyContentErr    = errors.New("post content cannot be empty")
+	TooLongTitleErr    = errors.New("post title cannot be longer than " + strconv.Itoa(MaxTitleLen) + " characters")
+	TooLongContentErr  = errors.New("post content cannot be longer than " + strconv.Itoa(MaxContentLen) + " characters")
+	NothingToUpdateErr = errors.New("at least one field needed to update")
+	InvalidPostID      = errors.New("post id must be valid integer")
 )
 
 func ValidateCreatePostInput(in gqlmodel.CreatePostInput) error {
-	if in.Title == "" {
+	if err := validateTitle(in.Title); err != nil {
+		return err
+	}
+	return validateContent(in.Content)
+}
+
+func validateTitle(title string) error {
+	if title == "" {
 		return EmptyTitleErr
 	}
-	if in.Content == "" {
-		return EmptyContentErr
-	}
-	if len(in.Title) > MaxTitleLen {
+	if len(title) > MaxTitleLen {
 		return TooLongTitleErr
 	}
-	if len(in.Content) > MaxContentLen {
+	return nil
+}
+
+func validateContent(content string) error {
+	if content == "" {
+		return EmptyContentErr
+	}
+	if len(content) > MaxContentLen {
 		return TooLongContentErr
 	}
+	return nil
+}
+
+func ValidateUpdatePostInput(in gqlmodel.UpdatePostInput) error {
+	if _, err := strconv.Atoi(in.ID); err != nil {
+		return InvalidPostID
+	}
+
+	if in.Title == nil && in.Content == nil {
+		return NothingToUpdateErr
+	}
+
+	if in.Title != nil {
+		if err := validateTitle(*in.Title); err != nil {
+			return err
+		}
+	}
+	if in.Content != nil {
+		if err := validateContent(*in.Content); err != nil {
+			return err
+		}
+	}
+
 	return nil
 }

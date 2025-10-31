@@ -13,6 +13,7 @@ import (
 
 	gqlmodel "github.com/trust-me-im-an-engineer/comments/graph/model"
 	"github.com/trust-me-im-an-engineer/comments/internal/converter"
+	"github.com/trust-me-im-an-engineer/comments/internal/storage"
 	"github.com/trust-me-im-an-engineer/comments/internal/validator"
 )
 
@@ -42,7 +43,22 @@ func (r *mutationResolver) CreatePost(ctx context.Context, input gqlmodel.Create
 
 // UpdatePost is the resolver for the updatePost field.
 func (r *mutationResolver) UpdatePost(ctx context.Context, input gqlmodel.UpdatePostInput) (*gqlmodel.Post, error) {
-	panic(fmt.Errorf("not implemented: UpdatePost - updatePost"))
+	if err := validator.ValidateUpdatePostInput(input); err != nil {
+		return nil, invalidInputWrap(err)
+	}
+
+	internalInput := converter.UpdatePostToInternal(&input)
+
+	post, err := r.postService.UpdatePost(ctx, internalInput)
+	if errors.Is(err, storage.PostNotFound) {
+		return nil, storage.PostNotFound
+	}
+	if err != nil {
+		slog.Error("post service failed to update post", "error", err)
+		return nil, InternalServerErr
+	}
+
+	return converter.PostToGQL(post), nil
 }
 
 // DeletePost is the resolver for the deletePost field.

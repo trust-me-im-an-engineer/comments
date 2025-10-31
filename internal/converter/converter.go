@@ -28,3 +28,12 @@ func PostToGQL(internal *internalmodel.Post) *gqlmodel.Post {
 		CommentsRestricted: internal.CommentsRestricted,
 	}
 }
+
+func UpdatePostToInternal(gql *gqlmodel.UpdatePostInput) *internalmodel.UpdatePostInput {
+	id, _ := strconv.Atoi(gql.ID) // id already validated
+	return &internalmodel.UpdatePostInput{
+		ID:      id,
+		Title:   gql.Title,
+		Content: gql.Content,
+	}
+}
