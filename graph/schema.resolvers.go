@@ -9,7 +9,6 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
-	"strconv"
 
 	gqlmodel "github.com/trust-me-im-an-engineer/comments/graph/model"
 	"github.com/trust-me-im-an-engineer/comments/internal/converter"
@@ -37,23 +36,7 @@ func (r *mutationResolver) CreatePost(ctx context.Context, input gqlmodel.Create
 		return nil, InternalServerErr
 	}
 
-	// no comments yet added, skip fetching
-	gqlPost := &gqlmodel.Post{
-		ID:                 strconv.Itoa(post.ID),
-		AuthorID:           post.AuthorID,
-		Title:              post.Title,
-		Content:            post.Content,
-		CreatedAt:          post.CreatedAt,
-		Rating:             post.Rating,
-		CommentsCount:      post.CommentsCount,
-		CommentsRestricted: post.CommentsRestricted,
-
-		Comments: &gqlmodel.CommentConnection{
-			Edges: []*gqlmodel.CommentEdge{}, // empty slice to keep "CommentEdge!" promise
-		},
-	}
-
-	return gqlPost, nil
+	return converter.PostToGQL(post), nil
 }
 
 // UpdatePost is the resolver for the updatePost field.
