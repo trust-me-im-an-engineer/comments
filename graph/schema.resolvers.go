@@ -8,6 +8,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log/slog"
 	"strconv"
 
 	gqlmodel "github.com/trust-me-im-an-engineer/comments/graph/model"
@@ -27,9 +28,11 @@ func (r *mutationResolver) CreatePost(ctx context.Context, input gqlmodel.Create
 
 	post, err := r.postService.CreatePost(ctx, internalInput)
 	if err != nil {
+		slog.Error("post service failed to create post", "error", err)
 		return nil, InternalServerErr
 	}
 
+	// no comments yet added, skip fetching
 	gqlPost := &gqlmodel.Post{
 		ID:                 strconv.Itoa(post.ID),
 		AuthorID:           post.AuthorID,
@@ -39,8 +42,9 @@ func (r *mutationResolver) CreatePost(ctx context.Context, input gqlmodel.Create
 		Rating:             post.Rating,
 		CommentsCount:      post.CommentsCount,
 		CommentsRestricted: post.CommentsRestricted,
+
 		Comments: &gqlmodel.CommentConnection{
-			Edges: []*gqlmodel.CommentEdge{}, // empty slice to keep CommentEdge! promise
+			Edges: []*gqlmodel.CommentEdge{}, // empty slice to keep "CommentEdge!" promise
 		},
 	}
 
