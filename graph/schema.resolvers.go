@@ -6,18 +6,45 @@ package graph
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"strconv"
 
 	gqlmodel "github.com/trust-me-im-an-engineer/comments/graph/model"
+	"github.com/trust-me-im-an-engineer/comments/internal/converter"
+	"github.com/trust-me-im-an-engineer/comments/internal/validator"
 )
+
+var InternalSerrverErr = errors.New("internal server error")
 
 // CreatePost is the resolver for the createPost field.
 func (r *mutationResolver) CreatePost(ctx context.Context, input gqlmodel.CreatePostInput) (*gqlmodel.Post, error) {
-	// post, err := r.postService.CreatePost(ctx, authorID, title, content)
-	// if err != nil {
+	if err := validator.ValidateCreatePostInput(input); err != nil {
+		return nil, invalidInputWrap(err)
+	}
 
-	// }
-	panic(fmt.Errorf("not implemented: CreatePost - createPost"))
+	internalInput := converter.CreatePostInputToInternal(&input)
+
+	post, err := r.postService.CreatePost(ctx, internalInput)
+	if err != nil {
+		return nil, InternalSerrverErr
+	}
+
+	gqlPost := &gqlmodel.Post{
+		ID:                 strconv.Itoa(post.ID),
+		AuthorID:           post.AuthorID,
+		Title:              post.Title,
+		Content:            post.Content,
+		CreatedAt:          post.CreatedAt,
+		Rating:             post.Rating,
+		CommentsCount:      post.CommentsCount,
+		CommentsRestricted: post.CommentsRestricted,
+		Comments: &gqlmodel.CommentConnection{
+			Edges: []*gqlmodel.CommentEdge{}, // empty slice to keep CommentEdge! promise
+		},
+	}
+
+	return gqlPost, nil
 }
 
 // UpdatePost is the resolver for the updatePost field.
@@ -102,3 +129,8 @@ func (r *Resolver) Subscription() SubscriptionResolver { return &subscriptionRes
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
 type subscriptionResolver struct{ *Resolver }
+
+// invalidInputWrap wraps error with "Invalid input: <error>"
+func invalidInputWrap(err error) error {
+	return fmt.Errorf("Invalid input: %w", err)
+}
