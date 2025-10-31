@@ -9,6 +9,7 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
+	"strconv"
 
 	gqlmodel "github.com/trust-me-im-an-engineer/comments/graph/model"
 	"github.com/trust-me-im-an-engineer/comments/internal/converter"
@@ -96,19 +97,18 @@ func (r *postResolver) Comments(ctx context.Context, obj *gqlmodel.Post, sort *g
 
 // Post is the resolver for the post field.
 func (r *queryResolver) Post(ctx context.Context, id string) (*gqlmodel.Post, error) {
-	// internalID, err := strconv.Atoi(id)
-	// if err != nil {
-	// 	return nil, invalidInputWrap(fmt.Errorf("invalid post id: %w", err))
-	// }
+	internalID, err := strconv.Atoi(id)
+	if err != nil {
+		return nil, invalidInputWrap(fmt.Errorf("invalid post id: %w", err))
+	}
 
-	// internalPost, err := r.postService.GetPost(ctx, internalID)
-	// if err != nil {
-	// 	slog.Error("post service failed to get post", "id", internalID, "error", err)
-	// 	return nil, InternalServerErr
-	// }
+	internalPost, err := r.postService.GetPost(ctx, internalID)
+	if err != nil {
+		slog.Error("post service failed to get post", "id", internalID, "error", err)
+		return nil, InternalServerErr
+	}
 
-	// return gqlPost, nil
-	panic("df")
+	return converter.PostToGQL(internalPost), nil
 }
 
 // Posts is the resolver for the posts field.

@@ -26,10 +26,5 @@ func PostToGQL(internal *internalmodel.Post) *gqlmodel.Post {
 		Rating:             internal.Rating,
 		CommentsCount:      internal.CommentsCount,
 		CommentsRestricted: internal.CommentsRestricted,
-
-		Comments: &gqlmodel.CommentConnection{
-			Edges:    []*gqlmodel.CommentEdge{},
-			PageInfo: &gqlmodel.PageInfo{},
-		},
 	}
 }

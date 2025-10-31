@@ -13,6 +13,10 @@ type Service struct {
 	storage storage.Storage
 }
 
+func (s *Service) GetPost(ctx context.Context, id int) (*model.Post, error) {
+	panic("unimplemented")
+}
+
 func NewService(storage storage.Storage) *Service {
 	return &Service{storage}
 }
