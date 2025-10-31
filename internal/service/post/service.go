@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"log/slog"
 
-	model "github.com/trust-me-im-an-engineer/comments/internal/domain"
+	"github.com/trust-me-im-an-engineer/comments/internal/domain"
 	"github.com/trust-me-im-an-engineer/comments/internal/storage"
 )
 
@@ -18,7 +18,7 @@ func NewService(storage storage.Storage) *Service {
 	return &Service{storage}
 }
 
-func (s *Service) GetPost(ctx context.Context, id int) (*model.Post, error) {
+func (s *Service) GetPost(ctx context.Context, id int) (*domain.Post, error) {
 	post, err := s.storage.GetPost(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("storage failed to get post: %w", err)
@@ -26,7 +26,7 @@ func (s *Service) GetPost(ctx context.Context, id int) (*model.Post, error) {
 	return post, nil
 }
 
-func (s *Service) CreatePost(ctx context.Context, createPostInput *model.CreatePostInput) (*model.Post, error) {
+func (s *Service) CreatePost(ctx context.Context, createPostInput *domain.CreatePostInput) (*domain.Post, error) {
 	post, err := s.storage.CreatePost(ctx, createPostInput)
 	if err != nil {
 		return nil, fmt.Errorf("storage failed to create post: %w", err)
@@ -36,7 +36,7 @@ func (s *Service) CreatePost(ctx context.Context, createPostInput *model.CreateP
 	return post, nil
 }
 
-func (s *Service) UpdatePost(ctx context.Context, updatePostInput *model.UpdatePostInput) (*model.Post, error) {
+func (s *Service) UpdatePost(ctx context.Context, updatePostInput *domain.UpdatePostInput) (*domain.Post, error) {
 	post, err := s.storage.UpdatePost(ctx, updatePostInput)
 	if errors.Is(err, storage.PostNotFound) {
 		return nil, fmt.Errorf("storage failed to update post: %w", err)
