@@ -45,3 +45,17 @@ func (s *Service) UpdatePost(ctx context.Context, updatePostInput *model.UpdateP
 	slog.Debug("post updated", "postID", post.ID)
 	return post, nil
 }
+
+func (s *Service) DeletePost(ctx context.Context, id int) error {
+	err := s.storage.DeletePost(ctx, id)
+	if errors.Is(err, storage.PostNotFound) {
+		return fmt.Errorf("storage failed to delete post: %w", err)
+	}
+
+	if err != nil {
+		return fmt.Errorf("storage failed to delete post: %w", err)
+	}
+
+	slog.Debug("post deleted", "postID", id)
+	return nil
+}

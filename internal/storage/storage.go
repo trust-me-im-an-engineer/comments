@@ -15,4 +15,5 @@ type Storage interface {
 	CreatePost(ctx context.Context, input *domain.CreatePostInput) (*domain.Post, error)
 	GetPost(ctx context.Context, id int) (*domain.Post, error)
 	UpdatePost(ctx context.Context, input *domain.UpdatePostInput) (*domain.Post, error)
+	DeletePost(ctx context.Context, id int) error
 }

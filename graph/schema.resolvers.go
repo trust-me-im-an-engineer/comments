@@ -63,7 +63,21 @@ func (r *mutationResolver) UpdatePost(ctx context.Context, input model.UpdatePos
 
 // DeletePost is the resolver for the deletePost field.
 func (r *mutationResolver) DeletePost(ctx context.Context, id string) (bool, error) {
-	panic(fmt.Errorf("not implemented: DeletePost - deletePost"))
+	internalID, err := strconv.Atoi(id)
+	if err != nil {
+		return false, invalidInputWrap(fmt.Errorf("invalid post id: %w", err))
+	}
+
+	err = r.postService.DeletePost(ctx, internalID)
+	if errors.Is(err, storage.PostNotFound) {
+		return false, storage.PostNotFound
+	}
+	if err != nil {
+		slog.Error("post service failed to delete post", "id", internalID, "error", err)
+		return false, InternalServerErr
+	}
+
+	return true, nil
 }
 
 // SetCommentsRestricted is the resolver for the setCommentsRestricted field.
