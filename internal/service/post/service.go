@@ -3,6 +3,7 @@ package post
 import (
 	"context"
 	"fmt"
+	"log/slog"
 
 	"github.com/trust-me-im-an-engineer/comments/internal/model"
 	"github.com/trust-me-im-an-engineer/comments/internal/storage"
@@ -21,5 +22,7 @@ func (s *Service) CreatePost(ctx context.Context, createPostInput *model.CreateP
 	if err != nil {
 		return nil, fmt.Errorf("storage failed to create post: %w", err)
 	}
+
+	slog.Debug("post created", "postID", post.ID, "authorID", post.AuthorID)
 	return post, nil
 }
