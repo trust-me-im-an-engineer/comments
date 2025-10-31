@@ -18,6 +18,11 @@ import (
 
 var InternalServerErr = errors.New("internal server error")
 
+// Children is the resolver for the children field.
+func (r *commentResolver) Children(ctx context.Context, obj *gqlmodel.Comment, sort *gqlmodel.SortOrder, limit *int32, cursor *string, depth *int32) (*gqlmodel.CommentConnection, error) {
+	panic(fmt.Errorf("not implemented: Children - children"))
+}
+
 // CreatePost is the resolver for the createPost field.
 func (r *mutationResolver) CreatePost(ctx context.Context, input gqlmodel.CreatePostInput) (*gqlmodel.Post, error) {
 	if err := validator.ValidateCreatePostInput(input); err != nil {
@@ -101,9 +106,26 @@ func (r *mutationResolver) DownvoteComment(ctx context.Context, input gqlmodel.V
 	panic(fmt.Errorf("not implemented: DownvoteComment - downvoteComment"))
 }
 
+// Comments is the resolver for the comments field.
+func (r *postResolver) Comments(ctx context.Context, obj *gqlmodel.Post, sort *gqlmodel.SortOrder, limit *int32, cursor *string, depth *int32) (*gqlmodel.CommentConnection, error) {
+	panic(fmt.Errorf("not implemented: Comments - comments"))
+}
+
 // Post is the resolver for the post field.
 func (r *queryResolver) Post(ctx context.Context, id string) (*gqlmodel.Post, error) {
-	panic(fmt.Errorf("not implemented: Post - post"))
+	// internalID, err := strconv.Atoi(id)
+	// if err != nil {
+	// 	return nil, invalidInputWrap(fmt.Errorf("invalid post id: %w", err))
+	// }
+
+	// internalPost, err := r.postService.GetPost(ctx, internalID)
+	// if err != nil {
+	// 	slog.Error("post service failed to get post", "id", internalID, "error", err)
+	// 	return nil, InternalServerErr
+	// }
+
+	// return gqlPost, nil
+	panic("df")
 }
 
 // Posts is the resolver for the posts field.
@@ -121,8 +143,14 @@ func (r *subscriptionResolver) NewComment(ctx context.Context, postID string) (<
 	panic(fmt.Errorf("not implemented: NewComment - newComment"))
 }
 
+// Comment returns CommentResolver implementation.
+func (r *Resolver) Comment() CommentResolver { return &commentResolver{r} }
+
 // Mutation returns MutationResolver implementation.
 func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
+
+// Post returns PostResolver implementation.
+func (r *Resolver) Post() PostResolver { return &postResolver{r} }
 
 // Query returns QueryResolver implementation.
 func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
@@ -130,11 +158,22 @@ func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 // Subscription returns SubscriptionResolver implementation.
 func (r *Resolver) Subscription() SubscriptionResolver { return &subscriptionResolver{r} }
 
+type commentResolver struct{ *Resolver }
 type mutationResolver struct{ *Resolver }
+type postResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
 type subscriptionResolver struct{ *Resolver }
 
-// invalidInputWrap wraps error with "Invalid input: <error>"
 func invalidInputWrap(err error) error {
 	return fmt.Errorf("Invalid input: %w", err)
 }
+
+// !!! WARNING !!!
+// The code below was going to be deleted when updating resolvers. It has been copied here so you have
+// one last chance to move it out of harms way if you want. There are two reasons this happens:
+//  - When renaming or deleting a resolver the old code will be put in here. You can safely delete
+//    it when you're done.
+//  - You have helper methods in this file. Move them out to keep these resolver files clean.
+/*
+
+ */

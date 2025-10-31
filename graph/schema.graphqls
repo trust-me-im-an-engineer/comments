@@ -31,7 +31,7 @@ type Post {
   rating: Int!
   commentsCount: Int!
   commentsRestricted: Boolean!
-  comments(sort: SortOrder = RATING, limit: Int = 6, cursor: String, depth: Int = 2): CommentConnection!
+  comments(sort: SortOrder = RATING, limit: Int = 6, cursor: String, depth: Int = 2): CommentConnection!  @goField(forceResolver: true)
 }
 
 input CreatePostInput {
@@ -64,7 +64,7 @@ type Comment {
   createdAt: Time!
   rating: Int!
   parentID: ID
-  children(sort: SortOrder = RATING, limit: Int = 6, cursor: String, depth: Int = 2): CommentConnection!
+  children(sort: SortOrder = RATING, limit: Int = 6, cursor: String, depth: Int = 2): CommentConnection! @goField(forceResolver: true)
   parentTree(depth: Int = 1): [Comment!]!
 }
 
@@ -112,3 +112,7 @@ type Query {
 type Subscription {
   newComment(postID: ID!): Comment!
 }
+
+directive @goField(
+  forceResolver: Boolean
+) on INPUT_FIELD_DEFINITION | FIELD_DEFINITION
