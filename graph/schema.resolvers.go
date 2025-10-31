@@ -15,7 +15,7 @@ import (
 	"github.com/trust-me-im-an-engineer/comments/internal/validator"
 )
 
-var InternalSerrverErr = errors.New("internal server error")
+var InternalServerErr = errors.New("internal server error")
 
 // CreatePost is the resolver for the createPost field.
 func (r *mutationResolver) CreatePost(ctx context.Context, input gqlmodel.CreatePostInput) (*gqlmodel.Post, error) {
@@ -27,7 +27,7 @@ func (r *mutationResolver) CreatePost(ctx context.Context, input gqlmodel.Create
 
 	post, err := r.postService.CreatePost(ctx, internalInput)
 	if err != nil {
-		return nil, InternalSerrverErr
+		return nil, InternalServerErr
 	}
 
 	gqlPost := &gqlmodel.Post{
