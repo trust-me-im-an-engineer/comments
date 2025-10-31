@@ -3,21 +3,21 @@ package converter
 import (
 	"strconv"
 
-	gqlmodel "github.com/trust-me-im-an-engineer/comments/graph/model"
-	internalmodel "github.com/trust-me-im-an-engineer/comments/internal/model"
+	"github.com/trust-me-im-an-engineer/comments/graph/model"
+	"github.com/trust-me-im-an-engineer/comments/internal/domain"
 )
 
-func CreatePostInputToInternal(gql *gqlmodel.CreatePostInput) *internalmodel.CreatePostInput {
-	return &internalmodel.CreatePostInput{
+func CreatePostInputToInternal(gql *model.CreatePostInput) *domain.CreatePostInput {
+	return &domain.CreatePostInput{
 		AuthorID: gql.AuthorID,
 		Title:    gql.Title,
 		Content:  gql.Content,
 	}
 }
 
-func PostToGQL(internal *internalmodel.Post) *gqlmodel.Post {
+func PostToGQL(internal *domain.Post) *model.Post {
 
-	return &gqlmodel.Post{
+	return &model.Post{
 		ID:                 strconv.Itoa(internal.ID),
 		AuthorID:           internal.AuthorID,
 		Title:              internal.Title,
@@ -29,9 +29,9 @@ func PostToGQL(internal *internalmodel.Post) *gqlmodel.Post {
 	}
 }
 
-func UpdatePostToInternal(gql *gqlmodel.UpdatePostInput) *internalmodel.UpdatePostInput {
+func UpdatePostToInternal(gql *model.UpdatePostInput) *domain.UpdatePostInput {
 	id, _ := strconv.Atoi(gql.ID) // id already validated
-	return &internalmodel.UpdatePostInput{
+	return &domain.UpdatePostInput{
 		ID:      id,
 		Title:   gql.Title,
 		Content: gql.Content,

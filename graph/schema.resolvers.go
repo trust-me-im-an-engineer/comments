@@ -11,7 +11,7 @@ import (
 	"log/slog"
 	"strconv"
 
-	gqlmodel "github.com/trust-me-im-an-engineer/comments/graph/model"
+	"github.com/trust-me-im-an-engineer/comments/graph/model"
 	"github.com/trust-me-im-an-engineer/comments/internal/converter"
 	"github.com/trust-me-im-an-engineer/comments/internal/storage"
 	"github.com/trust-me-im-an-engineer/comments/internal/validator"
@@ -20,12 +20,12 @@ import (
 var InternalServerErr = errors.New("internal server error")
 
 // Children is the resolver for the children field.
-func (r *commentResolver) Children(ctx context.Context, obj *gqlmodel.Comment, sort *gqlmodel.SortOrder, limit *int32, cursor *string, depth *int32) (*gqlmodel.CommentConnection, error) {
+func (r *commentResolver) Children(ctx context.Context, obj *model.Comment, sort *model.SortOrder, limit *int32, cursor *string, depth *int32) (*model.CommentConnection, error) {
 	panic(fmt.Errorf("not implemented: Children - children"))
 }
 
 // CreatePost is the resolver for the createPost field.
-func (r *mutationResolver) CreatePost(ctx context.Context, input gqlmodel.CreatePostInput) (*gqlmodel.Post, error) {
+func (r *mutationResolver) CreatePost(ctx context.Context, input model.CreatePostInput) (*model.Post, error) {
 	if err := validator.ValidateCreatePostInput(input); err != nil {
 		return nil, invalidInputWrap(err)
 	}
@@ -42,7 +42,7 @@ func (r *mutationResolver) CreatePost(ctx context.Context, input gqlmodel.Create
 }
 
 // UpdatePost is the resolver for the updatePost field.
-func (r *mutationResolver) UpdatePost(ctx context.Context, input gqlmodel.UpdatePostInput) (*gqlmodel.Post, error) {
+func (r *mutationResolver) UpdatePost(ctx context.Context, input model.UpdatePostInput) (*model.Post, error) {
 	if err := validator.ValidateUpdatePostInput(input); err != nil {
 		return nil, invalidInputWrap(err)
 	}
@@ -67,27 +67,27 @@ func (r *mutationResolver) DeletePost(ctx context.Context, id string) (bool, err
 }
 
 // SetCommentsRestricted is the resolver for the setCommentsRestricted field.
-func (r *mutationResolver) SetCommentsRestricted(ctx context.Context, postID string, restricted bool) (*gqlmodel.Post, error) {
+func (r *mutationResolver) SetCommentsRestricted(ctx context.Context, postID string, restricted bool) (*model.Post, error) {
 	panic(fmt.Errorf("not implemented: SetCommentsRestricted - setCommentsRestricted"))
 }
 
 // UpvotePost is the resolver for the upvotePost field.
-func (r *mutationResolver) UpvotePost(ctx context.Context, input gqlmodel.VoteInput) (*gqlmodel.Post, error) {
+func (r *mutationResolver) UpvotePost(ctx context.Context, input model.VoteInput) (*model.Post, error) {
 	panic(fmt.Errorf("not implemented: UpvotePost - upvotePost"))
 }
 
 // DownvotePost is the resolver for the downvotePost field.
-func (r *mutationResolver) DownvotePost(ctx context.Context, input gqlmodel.VoteInput) (*gqlmodel.Post, error) {
+func (r *mutationResolver) DownvotePost(ctx context.Context, input model.VoteInput) (*model.Post, error) {
 	panic(fmt.Errorf("not implemented: DownvotePost - downvotePost"))
 }
 
 // CreateComment is the resolver for the createComment field.
-func (r *mutationResolver) CreateComment(ctx context.Context, input gqlmodel.CreateCommentInput) (*gqlmodel.Comment, error) {
+func (r *mutationResolver) CreateComment(ctx context.Context, input model.CreateCommentInput) (*model.Comment, error) {
 	panic(fmt.Errorf("not implemented: CreateComment - createComment"))
 }
 
 // UpdateComment is the resolver for the updateComment field.
-func (r *mutationResolver) UpdateComment(ctx context.Context, input gqlmodel.UpdateCommentInput) (*gqlmodel.Comment, error) {
+func (r *mutationResolver) UpdateComment(ctx context.Context, input model.UpdateCommentInput) (*model.Comment, error) {
 	panic(fmt.Errorf("not implemented: UpdateComment - updateComment"))
 }
 
@@ -97,22 +97,22 @@ func (r *mutationResolver) DeleteComment(ctx context.Context, id string) (bool, 
 }
 
 // UpvoteComment is the resolver for the upvoteComment field.
-func (r *mutationResolver) UpvoteComment(ctx context.Context, input gqlmodel.VoteInput) (*gqlmodel.Comment, error) {
+func (r *mutationResolver) UpvoteComment(ctx context.Context, input model.VoteInput) (*model.Comment, error) {
 	panic(fmt.Errorf("not implemented: UpvoteComment - upvoteComment"))
 }
 
 // DownvoteComment is the resolver for the downvoteComment field.
-func (r *mutationResolver) DownvoteComment(ctx context.Context, input gqlmodel.VoteInput) (*gqlmodel.Comment, error) {
+func (r *mutationResolver) DownvoteComment(ctx context.Context, input model.VoteInput) (*model.Comment, error) {
 	panic(fmt.Errorf("not implemented: DownvoteComment - downvoteComment"))
 }
 
 // Comments is the resolver for the comments field.
-func (r *postResolver) Comments(ctx context.Context, obj *gqlmodel.Post, sort *gqlmodel.SortOrder, limit *int32, cursor *string, depth *int32) (*gqlmodel.CommentConnection, error) {
+func (r *postResolver) Comments(ctx context.Context, obj *model.Post, sort *model.SortOrder, limit *int32, cursor *string, depth *int32) (*model.CommentConnection, error) {
 	panic(fmt.Errorf("not implemented: Comments - comments"))
 }
 
 // Post is the resolver for the post field.
-func (r *queryResolver) Post(ctx context.Context, id string) (*gqlmodel.Post, error) {
+func (r *queryResolver) Post(ctx context.Context, id string) (*model.Post, error) {
 	internalID, err := strconv.Atoi(id)
 	if err != nil {
 		return nil, invalidInputWrap(fmt.Errorf("invalid post id: %w", err))
@@ -128,17 +128,17 @@ func (r *queryResolver) Post(ctx context.Context, id string) (*gqlmodel.Post, er
 }
 
 // Posts is the resolver for the posts field.
-func (r *queryResolver) Posts(ctx context.Context, sort *gqlmodel.SortOrder, limit *int32, cursor *string) (*gqlmodel.PostConnection, error) {
+func (r *queryResolver) Posts(ctx context.Context, sort *model.SortOrder, limit *int32, cursor *string) (*model.PostConnection, error) {
 	panic(fmt.Errorf("not implemented: Posts - posts"))
 }
 
 // Comment is the resolver for the comment field.
-func (r *queryResolver) Comment(ctx context.Context, id string) (*gqlmodel.Comment, error) {
+func (r *queryResolver) Comment(ctx context.Context, id string) (*model.Comment, error) {
 	panic(fmt.Errorf("not implemented: Comment - comment"))
 }
 
 // NewComment is the resolver for the newComment field.
-func (r *subscriptionResolver) NewComment(ctx context.Context, postID string) (<-chan *gqlmodel.Comment, error) {
+func (r *subscriptionResolver) NewComment(ctx context.Context, postID string) (<-chan *model.Comment, error) {
 	panic(fmt.Errorf("not implemented: NewComment - newComment"))
 }
 

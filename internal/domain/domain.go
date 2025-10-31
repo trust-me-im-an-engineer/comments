@@ -1,5 +1,5 @@
 // package model contains internal model representation different from graph/model
-package model
+package domain
 
 import (
 	"time"

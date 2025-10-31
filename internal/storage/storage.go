@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 
-	"github.com/trust-me-im-an-engineer/comments/internal/model"
+	"github.com/trust-me-im-an-engineer/comments/internal/domain"
 )
 
 var (
@@ -12,7 +12,7 @@ var (
 )
 
 type Storage interface {
-	CreatePost(ctx context.Context, input *model.CreatePostInput) (*model.Post, error)
-	GetPost(ctx context.Context, id int) (*model.Post, error)
-	UpdatePost(ctx context.Context, input *model.UpdatePostInput) (*model.Post, error)
+	CreatePost(ctx context.Context, input *domain.CreatePostInput) (*domain.Post, error)
+	GetPost(ctx context.Context, id int) (*domain.Post, error)
+	UpdatePost(ctx context.Context, input *domain.UpdatePostInput) (*domain.Post, error)
 }

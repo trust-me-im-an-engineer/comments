@@ -4,7 +4,7 @@ import (
 	"errors"
 	"strconv"
 
-	gqlmodel "github.com/trust-me-im-an-engineer/comments/graph/model"
+	"github.com/trust-me-im-an-engineer/comments/graph/model"
 )
 
 const (
@@ -21,7 +21,7 @@ var (
 	InvalidPostID      = errors.New("post id must be valid integer")
 )
 
-func ValidateCreatePostInput(in gqlmodel.CreatePostInput) error {
+func ValidateCreatePostInput(in model.CreatePostInput) error {
 	if err := validateTitle(in.Title); err != nil {
 		return err
 	}
@@ -48,7 +48,7 @@ func validateContent(content string) error {
 	return nil
 }
 
-func ValidateUpdatePostInput(in gqlmodel.UpdatePostInput) error {
+func ValidateUpdatePostInput(in model.UpdatePostInput) error {
 	if _, err := strconv.Atoi(in.ID); err != nil {
 		return InvalidPostID
 	}

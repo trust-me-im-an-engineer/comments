@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"log/slog"
 
-	"github.com/trust-me-im-an-engineer/comments/internal/model"
+	model "github.com/trust-me-im-an-engineer/comments/internal/domain"
 	"github.com/trust-me-im-an-engineer/comments/internal/storage"
 )
 
