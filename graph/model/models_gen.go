@@ -34,6 +34,19 @@ type CommentEdge struct {
 	Node   *Comment `json:"node"`
 }
 
+type CreateCommentInput struct {
+	PostID   string    `json:"postID"`
+	AuthorID uuid.UUID `json:"authorID"`
+	Text     string    `json:"text"`
+	ParentID *string   `json:"parentID,omitempty"`
+}
+
+type CreatePostInput struct {
+	AuthorID uuid.UUID `json:"authorID"`
+	Title    string    `json:"title"`
+	Content  string    `json:"content"`
+}
+
 type Mutation struct {
 }
 
@@ -68,6 +81,22 @@ type Query struct {
 }
 
 type Subscription struct {
+}
+
+type UpdateCommentInput struct {
+	ID   string `json:"id"`
+	Text string `json:"text"`
+}
+
+type UpdatePostInput struct {
+	ID      string  `json:"id"`
+	Title   *string `json:"title,omitempty"`
+	Content *string `json:"content,omitempty"`
+}
+
+type VoteInput struct {
+	ID      string    `json:"id"`
+	VoterID uuid.UUID `json:"voterID"`
 }
 
 type SortOrder string

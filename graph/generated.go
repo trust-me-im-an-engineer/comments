@@ -73,17 +73,17 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
-		CreateComment         func(childComplexity int, postID string, authorID uuid.UUID, text string, parentID *string) int
-		CreatePost            func(childComplexity int, authorID uuid.UUID, title string, content string) int
+		CreateComment         func(childComplexity int, input model.CreateCommentInput) int
+		CreatePost            func(childComplexity int, input model.CreatePostInput) int
 		DeleteComment         func(childComplexity int, id string) int
 		DeletePost            func(childComplexity int, id string) int
-		DownvoteComment       func(childComplexity int, id string, voterID uuid.UUID) int
-		DownvotePost          func(childComplexity int, id string, voterID uuid.UUID) int
+		DownvoteComment       func(childComplexity int, input model.VoteInput) int
+		DownvotePost          func(childComplexity int, input model.VoteInput) int
 		SetCommentsRestricted func(childComplexity int, postID string, restricted bool) int
-		UpdateComment         func(childComplexity int, id string, text string) int
-		UpdatePost            func(childComplexity int, id string, title *string, content *string) int
-		UpvoteComment         func(childComplexity int, id string, voterID uuid.UUID) int
-		UpvotePost            func(childComplexity int, id string, voterID uuid.UUID) int
+		UpdateComment         func(childComplexity int, input model.UpdateCommentInput) int
+		UpdatePost            func(childComplexity int, input model.UpdatePostInput) int
+		UpvoteComment         func(childComplexity int, input model.VoteInput) int
+		UpvotePost            func(childComplexity int, input model.VoteInput) int
 	}
 
 	PageInfo struct {
@@ -125,17 +125,17 @@ type ComplexityRoot struct {
 }
 
 type MutationResolver interface {
-	CreatePost(ctx context.Context, authorID uuid.UUID, title string, content string) (*model.Post, error)
-	UpdatePost(ctx context.Context, id string, title *string, content *string) (*model.Post, error)
+	CreatePost(ctx context.Context, input model.CreatePostInput) (*model.Post, error)
+	UpdatePost(ctx context.Context, input model.UpdatePostInput) (*model.Post, error)
 	DeletePost(ctx context.Context, id string) (bool, error)
 	SetCommentsRestricted(ctx context.Context, postID string, restricted bool) (*model.Post, error)
-	UpvotePost(ctx context.Context, id string, voterID uuid.UUID) (*model.Post, error)
-	DownvotePost(ctx context.Context, id string, voterID uuid.UUID) (*model.Post, error)
-	CreateComment(ctx context.Context, postID string, authorID uuid.UUID, text string, parentID *string) (*model.Comment, error)
-	UpdateComment(ctx context.Context, id string, text string) (*model.Comment, error)
+	UpvotePost(ctx context.Context, input model.VoteInput) (*model.Post, error)
+	DownvotePost(ctx context.Context, input model.VoteInput) (*model.Post, error)
+	CreateComment(ctx context.Context, input model.CreateCommentInput) (*model.Comment, error)
+	UpdateComment(ctx context.Context, input model.UpdateCommentInput) (*model.Comment, error)
 	DeleteComment(ctx context.Context, id string) (bool, error)
-	UpvoteComment(ctx context.Context, id string, voterID uuid.UUID) (*model.Comment, error)
-	DownvoteComment(ctx context.Context, id string, voterID uuid.UUID) (*model.Comment, error)
+	UpvoteComment(ctx context.Context, input model.VoteInput) (*model.Comment, error)
+	DownvoteComment(ctx context.Context, input model.VoteInput) (*model.Comment, error)
 }
 type QueryResolver interface {
 	Post(ctx context.Context, id string) (*model.Post, error)
@@ -266,7 +266,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreateComment(childComplexity, args["postID"].(string), args["authorID"].(uuid.UUID), args["text"].(string), args["parentID"].(*string)), true
+		return e.complexity.Mutation.CreateComment(childComplexity, args["input"].(model.CreateCommentInput)), true
 	case "Mutation.createPost":
 		if e.complexity.Mutation.CreatePost == nil {
 			break
@@ -277,7 +277,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreatePost(childComplexity, args["authorID"].(uuid.UUID), args["title"].(string), args["content"].(string)), true
+		return e.complexity.Mutation.CreatePost(childComplexity, args["input"].(model.CreatePostInput)), true
 	case "Mutation.deleteComment":
 		if e.complexity.Mutation.DeleteComment == nil {
 			break
@@ -310,7 +310,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.Mutation.DownvoteComment(childComplexity, args["id"].(string), args["voterID"].(uuid.UUID)), true
+		return e.complexity.Mutation.DownvoteComment(childComplexity, args["input"].(model.VoteInput)), true
 	case "Mutation.downvotePost":
 		if e.complexity.Mutation.DownvotePost == nil {
 			break
@@ -321,7 +321,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.Mutation.DownvotePost(childComplexity, args["id"].(string), args["voterID"].(uuid.UUID)), true
+		return e.complexity.Mutation.DownvotePost(childComplexity, args["input"].(model.VoteInput)), true
 	case "Mutation.setCommentsRestricted":
 		if e.complexity.Mutation.SetCommentsRestricted == nil {
 			break
@@ -343,7 +343,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.Mutation.UpdateComment(childComplexity, args["id"].(string), args["text"].(string)), true
+		return e.complexity.Mutation.UpdateComment(childComplexity, args["input"].(model.UpdateCommentInput)), true
 	case "Mutation.updatePost":
 		if e.complexity.Mutation.UpdatePost == nil {
 			break
@@ -354,7 +354,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.Mutation.UpdatePost(childComplexity, args["id"].(string), args["title"].(*string), args["content"].(*string)), true
+		return e.complexity.Mutation.UpdatePost(childComplexity, args["input"].(model.UpdatePostInput)), true
 	case "Mutation.upvoteComment":
 		if e.complexity.Mutation.UpvoteComment == nil {
 			break
@@ -365,7 +365,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.Mutation.UpvoteComment(childComplexity, args["id"].(string), args["voterID"].(uuid.UUID)), true
+		return e.complexity.Mutation.UpvoteComment(childComplexity, args["input"].(model.VoteInput)), true
 	case "Mutation.upvotePost":
 		if e.complexity.Mutation.UpvotePost == nil {
 			break
@@ -376,7 +376,7 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 			return 0, false
 		}
 
-		return e.complexity.Mutation.UpvotePost(childComplexity, args["id"].(string), args["voterID"].(uuid.UUID)), true
+		return e.complexity.Mutation.UpvotePost(childComplexity, args["input"].(model.VoteInput)), true
 
 	case "PageInfo.endCursor":
 		if e.complexity.PageInfo.EndCursor == nil {
@@ -530,7 +530,13 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	opCtx := graphql.GetOperationContext(ctx)
 	ec := executionContext{opCtx, e, 0, 0, make(chan graphql.DeferredResult)}
-	inputUnmarshalMap := graphql.BuildUnmarshalerMap()
+	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
+		ec.unmarshalInputCreateCommentInput,
+		ec.unmarshalInputCreatePostInput,
+		ec.unmarshalInputUpdateCommentInput,
+		ec.unmarshalInputUpdatePostInput,
+		ec.unmarshalInputVoteInput,
+	)
 	first := true
 
 	switch opCtx.Operation.Operation {
@@ -703,47 +709,22 @@ func (ec *executionContext) field_Comment_parentTree_args(ctx context.Context, r
 func (ec *executionContext) field_Mutation_createComment_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "postID", ec.unmarshalNID2string)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "input", ec.unmarshalNCreateCommentInput2githubᚗcomᚋtrustᚑmeᚑimᚑanᚑengineerᚋcommentsᚋgraphᚋmodelᚐCreateCommentInput)
 	if err != nil {
 		return nil, err
 	}
-	args["postID"] = arg0
-	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "authorID", ec.unmarshalNUUID2githubᚗcomᚋgoogleᚋuuidᚐUUID)
-	if err != nil {
-		return nil, err
-	}
-	args["authorID"] = arg1
-	arg2, err := graphql.ProcessArgField(ctx, rawArgs, "text", ec.unmarshalNString2string)
-	if err != nil {
-		return nil, err
-	}
-	args["text"] = arg2
-	arg3, err := graphql.ProcessArgField(ctx, rawArgs, "parentID", ec.unmarshalOID2ᚖstring)
-	if err != nil {
-		return nil, err
-	}
-	args["parentID"] = arg3
+	args["input"] = arg0
 	return args, nil
 }
 
 func (ec *executionContext) field_Mutation_createPost_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "authorID", ec.unmarshalNUUID2githubᚗcomᚋgoogleᚋuuidᚐUUID)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "input", ec.unmarshalNCreatePostInput2githubᚗcomᚋtrustᚑmeᚑimᚑanᚑengineerᚋcommentsᚋgraphᚋmodelᚐCreatePostInput)
 	if err != nil {
 		return nil, err
 	}
-	args["authorID"] = arg0
-	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "title", ec.unmarshalNString2string)
-	if err != nil {
-		return nil, err
-	}
-	args["title"] = arg1
-	arg2, err := graphql.ProcessArgField(ctx, rawArgs, "content", ec.unmarshalNString2string)
-	if err != nil {
-		return nil, err
-	}
-	args["content"] = arg2
+	args["input"] = arg0
 	return args, nil
 }
 
@@ -772,32 +753,22 @@ func (ec *executionContext) field_Mutation_deletePost_args(ctx context.Context, 
 func (ec *executionContext) field_Mutation_downvoteComment_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "id", ec.unmarshalNID2string)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "input", ec.unmarshalNVoteInput2githubᚗcomᚋtrustᚑmeᚑimᚑanᚑengineerᚋcommentsᚋgraphᚋmodelᚐVoteInput)
 	if err != nil {
 		return nil, err
 	}
-	args["id"] = arg0
-	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "voterID", ec.unmarshalNUUID2githubᚗcomᚋgoogleᚋuuidᚐUUID)
-	if err != nil {
-		return nil, err
-	}
-	args["voterID"] = arg1
+	args["input"] = arg0
 	return args, nil
 }
 
 func (ec *executionContext) field_Mutation_downvotePost_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "id", ec.unmarshalNID2string)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "input", ec.unmarshalNVoteInput2githubᚗcomᚋtrustᚑmeᚑimᚑanᚑengineerᚋcommentsᚋgraphᚋmodelᚐVoteInput)
 	if err != nil {
 		return nil, err
 	}
-	args["id"] = arg0
-	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "voterID", ec.unmarshalNUUID2githubᚗcomᚋgoogleᚋuuidᚐUUID)
-	if err != nil {
-		return nil, err
-	}
-	args["voterID"] = arg1
+	args["input"] = arg0
 	return args, nil
 }
 
@@ -820,69 +791,44 @@ func (ec *executionContext) field_Mutation_setCommentsRestricted_args(ctx contex
 func (ec *executionContext) field_Mutation_updateComment_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "id", ec.unmarshalNID2string)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "input", ec.unmarshalNUpdateCommentInput2githubᚗcomᚋtrustᚑmeᚑimᚑanᚑengineerᚋcommentsᚋgraphᚋmodelᚐUpdateCommentInput)
 	if err != nil {
 		return nil, err
 	}
-	args["id"] = arg0
-	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "text", ec.unmarshalNString2string)
-	if err != nil {
-		return nil, err
-	}
-	args["text"] = arg1
+	args["input"] = arg0
 	return args, nil
 }
 
 func (ec *executionContext) field_Mutation_updatePost_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "id", ec.unmarshalNID2string)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "input", ec.unmarshalNUpdatePostInput2githubᚗcomᚋtrustᚑmeᚑimᚑanᚑengineerᚋcommentsᚋgraphᚋmodelᚐUpdatePostInput)
 	if err != nil {
 		return nil, err
 	}
-	args["id"] = arg0
-	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "title", ec.unmarshalOString2ᚖstring)
-	if err != nil {
-		return nil, err
-	}
-	args["title"] = arg1
-	arg2, err := graphql.ProcessArgField(ctx, rawArgs, "content", ec.unmarshalOString2ᚖstring)
-	if err != nil {
-		return nil, err
-	}
-	args["content"] = arg2
+	args["input"] = arg0
 	return args, nil
 }
 
 func (ec *executionContext) field_Mutation_upvoteComment_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "id", ec.unmarshalNID2string)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "input", ec.unmarshalNVoteInput2githubᚗcomᚋtrustᚑmeᚑimᚑanᚑengineerᚋcommentsᚋgraphᚋmodelᚐVoteInput)
 	if err != nil {
 		return nil, err
 	}
-	args["id"] = arg0
-	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "voterID", ec.unmarshalNUUID2githubᚗcomᚋgoogleᚋuuidᚐUUID)
-	if err != nil {
-		return nil, err
-	}
-	args["voterID"] = arg1
+	args["input"] = arg0
 	return args, nil
 }
 
 func (ec *executionContext) field_Mutation_upvotePost_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
-	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "id", ec.unmarshalNID2string)
+	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "input", ec.unmarshalNVoteInput2githubᚗcomᚋtrustᚑmeᚑimᚑanᚑengineerᚋcommentsᚋgraphᚋmodelᚐVoteInput)
 	if err != nil {
 		return nil, err
 	}
-	args["id"] = arg0
-	arg1, err := graphql.ProcessArgField(ctx, rawArgs, "voterID", ec.unmarshalNUUID2githubᚗcomᚋgoogleᚋuuidᚐUUID)
-	if err != nil {
-		return nil, err
-	}
-	args["voterID"] = arg1
+	args["input"] = arg0
 	return args, nil
 }
 
@@ -1494,7 +1440,7 @@ func (ec *executionContext) _Mutation_createPost(ctx context.Context, field grap
 		ec.fieldContext_Mutation_createPost,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.Mutation().CreatePost(ctx, fc.Args["authorID"].(uuid.UUID), fc.Args["title"].(string), fc.Args["content"].(string))
+			return ec.resolvers.Mutation().CreatePost(ctx, fc.Args["input"].(model.CreatePostInput))
 		},
 		nil,
 		ec.marshalNPost2ᚖgithubᚗcomᚋtrustᚑmeᚑimᚑanᚑengineerᚋcommentsᚋgraphᚋmodelᚐPost,
@@ -1555,7 +1501,7 @@ func (ec *executionContext) _Mutation_updatePost(ctx context.Context, field grap
 		ec.fieldContext_Mutation_updatePost,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.Mutation().UpdatePost(ctx, fc.Args["id"].(string), fc.Args["title"].(*string), fc.Args["content"].(*string))
+			return ec.resolvers.Mutation().UpdatePost(ctx, fc.Args["input"].(model.UpdatePostInput))
 		},
 		nil,
 		ec.marshalNPost2ᚖgithubᚗcomᚋtrustᚑmeᚑimᚑanᚑengineerᚋcommentsᚋgraphᚋmodelᚐPost,
@@ -1718,7 +1664,7 @@ func (ec *executionContext) _Mutation_upvotePost(ctx context.Context, field grap
 		ec.fieldContext_Mutation_upvotePost,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.Mutation().UpvotePost(ctx, fc.Args["id"].(string), fc.Args["voterID"].(uuid.UUID))
+			return ec.resolvers.Mutation().UpvotePost(ctx, fc.Args["input"].(model.VoteInput))
 		},
 		nil,
 		ec.marshalNPost2ᚖgithubᚗcomᚋtrustᚑmeᚑimᚑanᚑengineerᚋcommentsᚋgraphᚋmodelᚐPost,
@@ -1779,7 +1725,7 @@ func (ec *executionContext) _Mutation_downvotePost(ctx context.Context, field gr
 		ec.fieldContext_Mutation_downvotePost,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.Mutation().DownvotePost(ctx, fc.Args["id"].(string), fc.Args["voterID"].(uuid.UUID))
+			return ec.resolvers.Mutation().DownvotePost(ctx, fc.Args["input"].(model.VoteInput))
 		},
 		nil,
 		ec.marshalNPost2ᚖgithubᚗcomᚋtrustᚑmeᚑimᚑanᚑengineerᚋcommentsᚋgraphᚋmodelᚐPost,
@@ -1840,7 +1786,7 @@ func (ec *executionContext) _Mutation_createComment(ctx context.Context, field g
 		ec.fieldContext_Mutation_createComment,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.Mutation().CreateComment(ctx, fc.Args["postID"].(string), fc.Args["authorID"].(uuid.UUID), fc.Args["text"].(string), fc.Args["parentID"].(*string))
+			return ec.resolvers.Mutation().CreateComment(ctx, fc.Args["input"].(model.CreateCommentInput))
 		},
 		nil,
 		ec.marshalNComment2ᚖgithubᚗcomᚋtrustᚑmeᚑimᚑanᚑengineerᚋcommentsᚋgraphᚋmodelᚐComment,
@@ -1901,7 +1847,7 @@ func (ec *executionContext) _Mutation_updateComment(ctx context.Context, field g
 		ec.fieldContext_Mutation_updateComment,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.Mutation().UpdateComment(ctx, fc.Args["id"].(string), fc.Args["text"].(string))
+			return ec.resolvers.Mutation().UpdateComment(ctx, fc.Args["input"].(model.UpdateCommentInput))
 		},
 		nil,
 		ec.marshalNComment2ᚖgithubᚗcomᚋtrustᚑmeᚑimᚑanᚑengineerᚋcommentsᚋgraphᚋmodelᚐComment,
@@ -2003,7 +1949,7 @@ func (ec *executionContext) _Mutation_upvoteComment(ctx context.Context, field g
 		ec.fieldContext_Mutation_upvoteComment,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.Mutation().UpvoteComment(ctx, fc.Args["id"].(string), fc.Args["voterID"].(uuid.UUID))
+			return ec.resolvers.Mutation().UpvoteComment(ctx, fc.Args["input"].(model.VoteInput))
 		},
 		nil,
 		ec.marshalNComment2ᚖgithubᚗcomᚋtrustᚑmeᚑimᚑanᚑengineerᚋcommentsᚋgraphᚋmodelᚐComment,
@@ -2064,7 +2010,7 @@ func (ec *executionContext) _Mutation_downvoteComment(ctx context.Context, field
 		ec.fieldContext_Mutation_downvoteComment,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.Mutation().DownvoteComment(ctx, fc.Args["id"].(string), fc.Args["voterID"].(uuid.UUID))
+			return ec.resolvers.Mutation().DownvoteComment(ctx, fc.Args["input"].(model.VoteInput))
 		},
 		nil,
 		ec.marshalNComment2ᚖgithubᚗcomᚋtrustᚑmeᚑimᚑanᚑengineerᚋcommentsᚋgraphᚋmodelᚐComment,
@@ -4385,6 +4331,204 @@ func (ec *executionContext) fieldContext___Type_isOneOf(_ context.Context, field
 
 // region    **************************** input.gotpl *****************************
 
+func (ec *executionContext) unmarshalInputCreateCommentInput(ctx context.Context, obj any) (model.CreateCommentInput, error) {
+	var it model.CreateCommentInput
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"postID", "authorID", "text", "parentID"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "postID":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("postID"))
+			data, err := ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.PostID = data
+		case "authorID":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("authorID"))
+			data, err := ec.unmarshalNUUID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.AuthorID = data
+		case "text":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("text"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Text = data
+		case "parentID":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parentID"))
+			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ParentID = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputCreatePostInput(ctx context.Context, obj any) (model.CreatePostInput, error) {
+	var it model.CreatePostInput
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"authorID", "title", "content"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "authorID":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("authorID"))
+			data, err := ec.unmarshalNUUID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.AuthorID = data
+		case "title":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("title"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Title = data
+		case "content":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("content"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Content = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputUpdateCommentInput(ctx context.Context, obj any) (model.UpdateCommentInput, error) {
+	var it model.UpdateCommentInput
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"id", "text"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "id":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			data, err := ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ID = data
+		case "text":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("text"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Text = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputUpdatePostInput(ctx context.Context, obj any) (model.UpdatePostInput, error) {
+	var it model.UpdatePostInput
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"id", "title", "content"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "id":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			data, err := ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ID = data
+		case "title":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("title"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Title = data
+		case "content":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("content"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Content = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputVoteInput(ctx context.Context, obj any) (model.VoteInput, error) {
+	var it model.VoteInput
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"id", "voterID"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "id":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			data, err := ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ID = data
+		case "voterID":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("voterID"))
+			data, err := ec.unmarshalNUUID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.VoterID = data
+		}
+	}
+
+	return it, nil
+}
+
 // endregion **************************** input.gotpl *****************************
 
 // region    ************************** interface.gotpl ***************************
@@ -5487,6 +5631,16 @@ func (ec *executionContext) marshalNCommentEdge2ᚖgithubᚗcomᚋtrustᚑmeᚑi
 	return ec._CommentEdge(ctx, sel, v)
 }
 
+func (ec *executionContext) unmarshalNCreateCommentInput2githubᚗcomᚋtrustᚑmeᚑimᚑanᚑengineerᚋcommentsᚋgraphᚋmodelᚐCreateCommentInput(ctx context.Context, v any) (model.CreateCommentInput, error) {
+	res, err := ec.unmarshalInputCreateCommentInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNCreatePostInput2githubᚗcomᚋtrustᚑmeᚑimᚑanᚑengineerᚋcommentsᚋgraphᚋmodelᚐCreatePostInput(ctx context.Context, v any) (model.CreatePostInput, error) {
+	res, err := ec.unmarshalInputCreatePostInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNID2string(ctx context.Context, v any) (string, error) {
 	res, err := graphql.UnmarshalID(v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -5657,6 +5811,21 @@ func (ec *executionContext) marshalNUUID2githubᚗcomᚋgoogleᚋuuidᚐUUID(ctx
 		}
 	}
 	return res
+}
+
+func (ec *executionContext) unmarshalNUpdateCommentInput2githubᚗcomᚋtrustᚑmeᚑimᚑanᚑengineerᚋcommentsᚋgraphᚋmodelᚐUpdateCommentInput(ctx context.Context, v any) (model.UpdateCommentInput, error) {
+	res, err := ec.unmarshalInputUpdateCommentInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNUpdatePostInput2githubᚗcomᚋtrustᚑmeᚑimᚑanᚑengineerᚋcommentsᚋgraphᚋmodelᚐUpdatePostInput(ctx context.Context, v any) (model.UpdatePostInput, error) {
+	res, err := ec.unmarshalInputUpdatePostInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNVoteInput2githubᚗcomᚋtrustᚑmeᚑimᚑanᚑengineerᚋcommentsᚋgraphᚋmodelᚐVoteInput(ctx context.Context, v any) (model.VoteInput, error) {
+	res, err := ec.unmarshalInputVoteInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) marshalN__Directive2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐDirective(ctx context.Context, sel ast.SelectionSet, v introspection.Directive) graphql.Marshaler {

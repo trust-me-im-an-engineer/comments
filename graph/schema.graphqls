@@ -12,8 +12,6 @@ type PageInfo {
   endCursor: String
 }
 
-# Post
-
 type PostEdge {
   cursor: String!
   node: Post!
@@ -36,7 +34,17 @@ type Post {
   comments(sort: SortOrder = RATING, limit: Int = 6, cursor: String, depth: Int = 2): CommentConnection!
 }
 
-# Comment
+input CreatePostInput {
+  authorID: UUID!
+  title: String!
+  content: String!
+}
+
+input UpdatePostInput {
+  id: ID!
+  title: String
+  content: String
+}
 
 type CommentEdge {
   cursor: String!
@@ -60,23 +68,40 @@ type Comment {
   parentTree(depth: Int = 1): [Comment!]!
 }
 
+input CreateCommentInput {
+  postID: ID!
+  authorID: UUID!
+  text: String!
+  parentID: ID
+}
+
+input UpdateCommentInput {
+  id: ID!
+  text: String!
+}
+
+input VoteInput {
+  id: ID!
+  voterID: UUID!
+}
 
 type Mutation {
-  createPost(authorID: UUID!, title: String!, content: String!): Post!
-  updatePost(id: ID!, title: String, content: String): Post!
+  createPost(input: CreatePostInput!): Post!
+  updatePost(input: UpdatePostInput!): Post!
   deletePost(id: ID!): Boolean!
   setCommentsRestricted(postID: ID!, restricted: Boolean!): Post!
-  
-  upvotePost(id: ID!, voterID: UUID!): Post!
-  downvotePost(id: ID!, voterID: UUID!): Post!
 
-  createComment(postID: ID!, authorID: UUID!, text: String!, parentID: ID): Comment!
-  updateComment(id: ID!, text: String!): Comment!
+  upvotePost(input: VoteInput!): Post!
+  downvotePost(input: VoteInput!): Post!
+
+  createComment(input: CreateCommentInput!): Comment!
+  updateComment(input: UpdateCommentInput!): Comment!
   deleteComment(id: ID!): Boolean!
 
-  upvoteComment(id: ID!, voterID: UUID!): Comment!
-  downvoteComment(id: ID!, voterID: UUID!): Comment!
+  upvoteComment(input: VoteInput!): Comment!
+  downvoteComment(input: VoteInput!): Comment!
 }
+
 
 type Query {
   post(id: ID!): Post

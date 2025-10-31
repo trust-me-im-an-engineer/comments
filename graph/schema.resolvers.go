@@ -8,17 +8,20 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/google/uuid"
-	"github.com/trust-me-im-an-engineer/comments/graph/model"
+	gqlmodel "github.com/trust-me-im-an-engineer/comments/graph/model"
 )
 
 // CreatePost is the resolver for the createPost field.
-func (r *mutationResolver) CreatePost(ctx context.Context, authorID uuid.UUID, title string, content string) (*model.Post, error) {
+func (r *mutationResolver) CreatePost(ctx context.Context, input gqlmodel.CreatePostInput) (*gqlmodel.Post, error) {
+	// post, err := r.postService.CreatePost(ctx, authorID, title, content)
+	// if err != nil {
+
+	// }
 	panic(fmt.Errorf("not implemented: CreatePost - createPost"))
 }
 
 // UpdatePost is the resolver for the updatePost field.
-func (r *mutationResolver) UpdatePost(ctx context.Context, id string, title *string, content *string) (*model.Post, error) {
+func (r *mutationResolver) UpdatePost(ctx context.Context, input gqlmodel.UpdatePostInput) (*gqlmodel.Post, error) {
 	panic(fmt.Errorf("not implemented: UpdatePost - updatePost"))
 }
 
@@ -28,27 +31,27 @@ func (r *mutationResolver) DeletePost(ctx context.Context, id string) (bool, err
 }
 
 // SetCommentsRestricted is the resolver for the setCommentsRestricted field.
-func (r *mutationResolver) SetCommentsRestricted(ctx context.Context, postID string, restricted bool) (*model.Post, error) {
+func (r *mutationResolver) SetCommentsRestricted(ctx context.Context, postID string, restricted bool) (*gqlmodel.Post, error) {
 	panic(fmt.Errorf("not implemented: SetCommentsRestricted - setCommentsRestricted"))
 }
 
 // UpvotePost is the resolver for the upvotePost field.
-func (r *mutationResolver) UpvotePost(ctx context.Context, id string, voterID uuid.UUID) (*model.Post, error) {
+func (r *mutationResolver) UpvotePost(ctx context.Context, input gqlmodel.VoteInput) (*gqlmodel.Post, error) {
 	panic(fmt.Errorf("not implemented: UpvotePost - upvotePost"))
 }
 
 // DownvotePost is the resolver for the downvotePost field.
-func (r *mutationResolver) DownvotePost(ctx context.Context, id string, voterID uuid.UUID) (*model.Post, error) {
+func (r *mutationResolver) DownvotePost(ctx context.Context, input gqlmodel.VoteInput) (*gqlmodel.Post, error) {
 	panic(fmt.Errorf("not implemented: DownvotePost - downvotePost"))
 }
 
 // CreateComment is the resolver for the createComment field.
-func (r *mutationResolver) CreateComment(ctx context.Context, postID string, authorID uuid.UUID, text string, parentID *string) (*model.Comment, error) {
+func (r *mutationResolver) CreateComment(ctx context.Context, input gqlmodel.CreateCommentInput) (*gqlmodel.Comment, error) {
 	panic(fmt.Errorf("not implemented: CreateComment - createComment"))
 }
 
 // UpdateComment is the resolver for the updateComment field.
-func (r *mutationResolver) UpdateComment(ctx context.Context, id string, text string) (*model.Comment, error) {
+func (r *mutationResolver) UpdateComment(ctx context.Context, input gqlmodel.UpdateCommentInput) (*gqlmodel.Comment, error) {
 	panic(fmt.Errorf("not implemented: UpdateComment - updateComment"))
 }
 
@@ -58,32 +61,32 @@ func (r *mutationResolver) DeleteComment(ctx context.Context, id string) (bool, 
 }
 
 // UpvoteComment is the resolver for the upvoteComment field.
-func (r *mutationResolver) UpvoteComment(ctx context.Context, id string, voterID uuid.UUID) (*model.Comment, error) {
+func (r *mutationResolver) UpvoteComment(ctx context.Context, input gqlmodel.VoteInput) (*gqlmodel.Comment, error) {
 	panic(fmt.Errorf("not implemented: UpvoteComment - upvoteComment"))
 }
 
 // DownvoteComment is the resolver for the downvoteComment field.
-func (r *mutationResolver) DownvoteComment(ctx context.Context, id string, voterID uuid.UUID) (*model.Comment, error) {
+func (r *mutationResolver) DownvoteComment(ctx context.Context, input gqlmodel.VoteInput) (*gqlmodel.Comment, error) {
 	panic(fmt.Errorf("not implemented: DownvoteComment - downvoteComment"))
 }
 
 // Post is the resolver for the post field.
-func (r *queryResolver) Post(ctx context.Context, id string) (*model.Post, error) {
+func (r *queryResolver) Post(ctx context.Context, id string) (*gqlmodel.Post, error) {
 	panic(fmt.Errorf("not implemented: Post - post"))
 }
 
 // Posts is the resolver for the posts field.
-func (r *queryResolver) Posts(ctx context.Context, sort *model.SortOrder, limit *int32, cursor *string) (*model.PostConnection, error) {
+func (r *queryResolver) Posts(ctx context.Context, sort *gqlmodel.SortOrder, limit *int32, cursor *string) (*gqlmodel.PostConnection, error) {
 	panic(fmt.Errorf("not implemented: Posts - posts"))
 }
 
 // Comment is the resolver for the comment field.
-func (r *queryResolver) Comment(ctx context.Context, id string) (*model.Comment, error) {
+func (r *queryResolver) Comment(ctx context.Context, id string) (*gqlmodel.Comment, error) {
 	panic(fmt.Errorf("not implemented: Comment - comment"))
 }
 
 // NewComment is the resolver for the newComment field.
-func (r *subscriptionResolver) NewComment(ctx context.Context, postID string) (<-chan *model.Comment, error) {
+func (r *subscriptionResolver) NewComment(ctx context.Context, postID string) (<-chan *gqlmodel.Comment, error) {
 	panic(fmt.Errorf("not implemented: NewComment - newComment"))
 }
 
@@ -99,18 +102,3 @@ func (r *Resolver) Subscription() SubscriptionResolver { return &subscriptionRes
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
 type subscriptionResolver struct{ *Resolver }
-
-// !!! WARNING !!!
-// The code below was going to be deleted when updating resolvers. It has been copied here so you have
-// one last chance to move it out of harms way if you want. There are two reasons this happens:
-//  - When renaming or deleting a resolver the old code will be put in here. You can safely delete
-//    it when you're done.
-//  - You have helper methods in this file. Move them out to keep these resolver files clean.
-/*
-	func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) (*model.Todo, error) {
-	panic(fmt.Errorf("not implemented: CreateTodo - createTodo"))
-}
-func (r *queryResolver) Todos(ctx context.Context) ([]*model.Todo, error) {
-	panic(fmt.Errorf("not implemented: Todos - todos"))
-}
-*/
