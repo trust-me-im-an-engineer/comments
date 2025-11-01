@@ -13,7 +13,7 @@ import (
 
 	"github.com/trust-me-im-an-engineer/comments/graph/model"
 	"github.com/trust-me-im-an-engineer/comments/internal/converter"
-	"github.com/trust-me-im-an-engineer/comments/internal/storage"
+	"github.com/trust-me-im-an-engineer/comments/internal/errs"
 	"github.com/trust-me-im-an-engineer/comments/internal/validator"
 )
 
@@ -50,8 +50,8 @@ func (r *mutationResolver) UpdatePost(ctx context.Context, input model.UpdatePos
 	domainInput := converter.UpdatePost_ModelToDomain(&input)
 
 	domainPost, err := r.postService.UpdatePost(ctx, domainInput)
-	if errors.Is(err, storage.PostNotFound) {
-		return nil, storage.PostNotFound
+	if errors.Is(err, errs.PostNotFound) {
+		return nil, errs.PostNotFound
 	}
 	if err != nil {
 		slog.Error("post service failed to update post", "error", err)
@@ -69,8 +69,8 @@ func (r *mutationResolver) DeletePost(ctx context.Context, id string) (bool, err
 	}
 
 	err = r.postService.DeletePost(ctx, domainID)
-	if errors.Is(err, storage.PostNotFound) {
-		return false, storage.PostNotFound
+	if errors.Is(err, errs.PostNotFound) {
+		return false, errs.PostNotFound
 	}
 	if err != nil {
 		slog.Error("post service failed to delete post", "id", domainID, "error", err)
@@ -88,8 +88,8 @@ func (r *mutationResolver) SetCommentsRestricted(ctx context.Context, postID str
 	}
 
 	domainPost, err := r.postService.SetCommentsRestricted(ctx, domainID, restricted)
-	if errors.Is(err, storage.PostNotFound) {
-		return nil, storage.PostNotFound
+	if errors.Is(err, errs.PostNotFound) {
+		return nil, errs.PostNotFound
 	}
 	if err != nil {
 		slog.Error("post service failed to set comments restricted", "id", domainID, "error", err)
@@ -108,8 +108,8 @@ func (r *mutationResolver) VotePost(ctx context.Context, input model.VoteInput) 
 	domainInput := converter.ModelVoteInputToDomainPostVote(&input)
 
 	domainPost, err := r.postService.VotePost(ctx, domainInput)
-	if errors.Is(err, storage.PostNotFound) {
-		return nil, storage.PostNotFound
+	if errors.Is(err, errs.PostNotFound) {
+		return nil, errs.PostNotFound
 	}
 	if err != nil {
 		slog.Error("post service failed to downvote post", "error", err)

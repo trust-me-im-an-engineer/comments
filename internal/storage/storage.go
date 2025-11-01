@@ -2,13 +2,8 @@ package storage
 
 import (
 	"context"
-	"errors"
 
 	"github.com/trust-me-im-an-engineer/comments/internal/domain"
-)
-
-var (
-	PostNotFound = errors.New("post not found")
 )
 
 type Storage interface {
