@@ -10,16 +10,19 @@ import (
 const (
 	MaxTitleLen   = 200
 	MaxContentLen = 20000
+	MaxCommentLen = 2000
 )
 
 var (
-	EmptyTitleErr      = errors.New("post title cannot be empty")
-	EmptyContentErr    = errors.New("post content cannot be empty")
-	TooLongTitleErr    = errors.New("post title cannot be longer than " + strconv.Itoa(MaxTitleLen) + " characters")
-	TooLongContentErr  = errors.New("post content cannot be longer than " + strconv.Itoa(MaxContentLen) + " characters")
-	NothingToUpdateErr = errors.New("at least one field needed to update")
-	InvalidID          = errors.New("id must be valid integer")
-	InvalidVoteValue   = errors.New("vote value must be 1 or -1")
+	EmptyTitleErr       = errors.New("post title cannot be empty")
+	EmptyContentErr     = errors.New("post content cannot be empty")
+	TooLongTitleErr     = errors.New("post title cannot be longer than " + strconv.Itoa(MaxTitleLen) + " characters")
+	TooLongContentErr   = errors.New("post content cannot be longer than " + strconv.Itoa(MaxContentLen) + " characters")
+	NothingToUpdateErr  = errors.New("at least one field needed to update")
+	InvalidIDErr        = errors.New("id must be valid integer")
+	InvalidVoteValueErr = errors.New("vote value must be 1 or -1")
+	EmptyCommentErr     = errors.New("comment cannot be empty")
+	TooLongCommentErr   = errors.New("comment cannot be longer than " + strconv.Itoa(MaxCommentLen) + " characters")
 )
 
 func ValidateCreatePostInput(in model.CreatePostInput) error {
@@ -51,7 +54,7 @@ func validateContent(content string) error {
 
 func ValidateUpdatePostInput(in model.UpdatePostInput) error {
 	if _, err := strconv.Atoi(in.ID); err != nil {
-		return InvalidID
+		return InvalidIDErr
 	}
 
 	if in.Title == nil && in.Content == nil {
@@ -74,10 +77,35 @@ func ValidateUpdatePostInput(in model.UpdatePostInput) error {
 
 func ValidateVoteInput(in model.VoteInput) error {
 	if _, err := strconv.Atoi(in.ID); err != nil {
-		return InvalidID
+		return InvalidIDErr
 	}
 	if in.Value != 1 && in.Value != -1 {
-		return InvalidVoteValue
+		return InvalidVoteValueErr
+	}
+	return nil
+}
+
+func validateCommentText(text string) error {
+	if text == "" {
+		return EmptyCommentErr
+	}
+	if len(text) > MaxContentLen {
+		return TooLongCommentErr
+	}
+	return nil
+}
+
+func ValidateCreateCommentInput(in model.CreateCommentInput) error {
+	if _, err := strconv.Atoi(in.PostID); err != nil {
+		return InvalidIDErr
+	}
+	if err := validateCommentText(in.Text); err != nil {
+		return err
+	}
+	if in.ParentID != nil {
+		if _, err := strconv.Atoi(*in.ParentID); err != nil {
+			return InvalidIDErr
+		}
 	}
 	return nil
 }

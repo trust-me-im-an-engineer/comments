@@ -121,7 +121,19 @@ func (r *mutationResolver) VotePost(ctx context.Context, input model.VoteInput) 
 
 // CreateComment is the resolver for the createComment field.
 func (r *mutationResolver) CreateComment(ctx context.Context, input model.CreateCommentInput) (*model.Comment, error) {
-	panic(fmt.Errorf("not implemented: CreateComment - createComment"))
+	if err := validator.ValidateCreateCommentInput(input); err != nil {
+		return nil, invalidInputWrap(err)
+	}
+
+	domainInput := converter.CreateCommentInput_ModelToDomain(&input)
+
+	domainComment, err := r.commentService.CreateComment(ctx, domainInput)
+	if err != nil {
+		slog.Error("comment service failed to create comment", "error", err)
+		return nil, InternalServerErr
+	}
+
+	return converter.Comment_DomainToModel(domainComment), nil
 }
 
 // UpdateComment is the resolver for the updateComment field.

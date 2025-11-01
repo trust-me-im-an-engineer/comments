@@ -48,3 +48,30 @@ func ModelVoteInputToDomainPostVote(m *model.VoteInput) *domain.PostVote {
 		},
 	}
 }
+
+func CreateCommentInput_ModelToDomain(m *model.CreateCommentInput) *domain.CreateCommentInput {
+	postID, _ := strconv.Atoi(m.PostID)
+	d := &domain.CreateCommentInput{
+		PostID:   postID,
+		AuthorID: m.AuthorID,
+		Text:     m.Text,
+		ParentID: nil,
+	}
+	if m.ParentID != nil {
+		parentID, _ := strconv.Atoi(*m.ParentID)
+		d.ParentID = &parentID
+	}
+	return d
+}
+
+func Comment_DomainToModel(d *domain.Comment) *model.Comment {
+	return &model.Comment{
+		ID:        strconv.Itoa(d.ID),
+		PostID:    strconv.Itoa(d.PostID),
+		AuthorID:  d.AuthorID,
+		Text:      d.Text,
+		CreatedAt: d.CreatedAt,
+		Rating:    d.Rating,
+		ParentID:  nil,
+	}
+}
