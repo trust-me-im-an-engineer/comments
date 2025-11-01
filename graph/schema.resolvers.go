@@ -214,14 +214,14 @@ func (r *postResolver) Comments(ctx context.Context, obj *model.Post, sort *mode
 
 // Post is the resolver for the post field.
 func (r *queryResolver) Post(ctx context.Context, id string) (*model.Post, error) {
-	internalID, err := strconv.Atoi(id)
+	domainID, err := strconv.Atoi(id)
 	if err != nil {
-		return nil, invalidInputWrap(fmt.Errorf("invalid post id: %w", err))
+		return nil, invalidInputWrap(errs.InvalidIDErr)
 	}
 
-	internalPost, err := r.postService.GetPost(ctx, internalID)
+	internalPost, err := r.postService.GetPost(ctx, domainID)
 	if err != nil {
-		slog.Error("post service failed to get post", "id", internalID, "error", err)
+		slog.Error("post service failed to get post", "id", domainID, "error", err)
 		return nil, InternalServerErr
 	}
 
@@ -235,7 +235,21 @@ func (r *queryResolver) Posts(ctx context.Context, sort *model.SortOrder, limit 
 
 // Comment is the resolver for the comment field.
 func (r *queryResolver) Comment(ctx context.Context, id string) (*model.Comment, error) {
-	panic(fmt.Errorf("not implemented: Comment - comment"))
+	domainID, err := strconv.Atoi(id)
+	if err != nil {
+		return nil, invalidInputWrap(errs.InvalidIDErr)
+	}
+
+	internalComment, err := r.commentService.GetComment(ctx, domainID)
+	if errors.Is(err, errs.CommentNotFound) {
+		return nil, errs.CommentNotFound
+	}
+	if err != nil {
+		slog.Error("comment service failed to get comment", "id", domainID, "error", err)
+		return nil, InternalServerErr
+	}
+
+	return converter.Comment_DomainToModel(internalComment), nil
 }
 
 // NewComment is the resolver for the newComment field.

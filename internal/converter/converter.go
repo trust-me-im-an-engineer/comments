@@ -68,7 +68,6 @@ func Comment_DomainToModel(d *domain.Comment) *model.Comment {
 		ID:       strconv.Itoa(d.ID),
 		PostID:   strconv.Itoa(d.PostID),
 		AuthorID: d.AuthorID,
-		// Text:      d.Text,
 		CreatedAt: d.CreatedAt,
 		Rating:    d.Rating,
 		ParentID:  nil,
