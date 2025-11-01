@@ -79,13 +79,11 @@ type ComplexityRoot struct {
 		CreatePost            func(childComplexity int, input model.CreatePostInput) int
 		DeleteComment         func(childComplexity int, id string) int
 		DeletePost            func(childComplexity int, id string) int
-		DownvoteComment       func(childComplexity int, input model.VoteInput) int
-		DownvotePost          func(childComplexity int, input model.VoteInput) int
 		SetCommentsRestricted func(childComplexity int, postID string, restricted bool) int
 		UpdateComment         func(childComplexity int, input model.UpdateCommentInput) int
 		UpdatePost            func(childComplexity int, input model.UpdatePostInput) int
-		UpvoteComment         func(childComplexity int, input model.VoteInput) int
-		UpvotePost            func(childComplexity int, input model.VoteInput) int
+		VoteComment           func(childComplexity int, input model.VoteInput) int
+		VotePost              func(childComplexity int, input model.VoteInput) int
 	}
 
 	PageInfo struct {
@@ -134,13 +132,11 @@ type MutationResolver interface {
 	UpdatePost(ctx context.Context, input model.UpdatePostInput) (*model.Post, error)
 	DeletePost(ctx context.Context, id string) (bool, error)
 	SetCommentsRestricted(ctx context.Context, postID string, restricted bool) (*model.Post, error)
-	UpvotePost(ctx context.Context, input model.VoteInput) (*model.Post, error)
-	DownvotePost(ctx context.Context, input model.VoteInput) (*model.Post, error)
+	VotePost(ctx context.Context, input model.VoteInput) (*model.Post, error)
 	CreateComment(ctx context.Context, input model.CreateCommentInput) (*model.Comment, error)
 	UpdateComment(ctx context.Context, input model.UpdateCommentInput) (*model.Comment, error)
 	DeleteComment(ctx context.Context, id string) (bool, error)
-	UpvoteComment(ctx context.Context, input model.VoteInput) (*model.Comment, error)
-	DownvoteComment(ctx context.Context, input model.VoteInput) (*model.Comment, error)
+	VoteComment(ctx context.Context, input model.VoteInput) (*model.Comment, error)
 }
 type PostResolver interface {
 	Comments(ctx context.Context, obj *model.Post, sort *model.SortOrder, limit *int32, cursor *string, depth *int32) (*model.CommentConnection, error)
@@ -308,28 +304,6 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Mutation.DeletePost(childComplexity, args["id"].(string)), true
-	case "Mutation.downvoteComment":
-		if e.complexity.Mutation.DownvoteComment == nil {
-			break
-		}
-
-		args, err := ec.field_Mutation_downvoteComment_args(ctx, rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Mutation.DownvoteComment(childComplexity, args["input"].(model.VoteInput)), true
-	case "Mutation.downvotePost":
-		if e.complexity.Mutation.DownvotePost == nil {
-			break
-		}
-
-		args, err := ec.field_Mutation_downvotePost_args(ctx, rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Mutation.DownvotePost(childComplexity, args["input"].(model.VoteInput)), true
 	case "Mutation.setCommentsRestricted":
 		if e.complexity.Mutation.SetCommentsRestricted == nil {
 			break
@@ -363,28 +337,28 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Mutation.UpdatePost(childComplexity, args["input"].(model.UpdatePostInput)), true
-	case "Mutation.upvoteComment":
-		if e.complexity.Mutation.UpvoteComment == nil {
+	case "Mutation.voteComment":
+		if e.complexity.Mutation.VoteComment == nil {
 			break
 		}
 
-		args, err := ec.field_Mutation_upvoteComment_args(ctx, rawArgs)
+		args, err := ec.field_Mutation_voteComment_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Mutation.UpvoteComment(childComplexity, args["input"].(model.VoteInput)), true
-	case "Mutation.upvotePost":
-		if e.complexity.Mutation.UpvotePost == nil {
+		return e.complexity.Mutation.VoteComment(childComplexity, args["input"].(model.VoteInput)), true
+	case "Mutation.votePost":
+		if e.complexity.Mutation.VotePost == nil {
 			break
 		}
 
-		args, err := ec.field_Mutation_upvotePost_args(ctx, rawArgs)
+		args, err := ec.field_Mutation_votePost_args(ctx, rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Mutation.UpvotePost(childComplexity, args["input"].(model.VoteInput)), true
+		return e.complexity.Mutation.VotePost(childComplexity, args["input"].(model.VoteInput)), true
 
 	case "PageInfo.endCursor":
 		if e.complexity.PageInfo.EndCursor == nil {
@@ -758,28 +732,6 @@ func (ec *executionContext) field_Mutation_deletePost_args(ctx context.Context, 
 	return args, nil
 }
 
-func (ec *executionContext) field_Mutation_downvoteComment_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
-	var err error
-	args := map[string]any{}
-	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "input", ec.unmarshalNVoteInput2githubᚗcomᚋtrustᚑmeᚑimᚑanᚑengineerᚋcommentsᚋgraphᚋmodelᚐVoteInput)
-	if err != nil {
-		return nil, err
-	}
-	args["input"] = arg0
-	return args, nil
-}
-
-func (ec *executionContext) field_Mutation_downvotePost_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
-	var err error
-	args := map[string]any{}
-	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "input", ec.unmarshalNVoteInput2githubᚗcomᚋtrustᚑmeᚑimᚑanᚑengineerᚋcommentsᚋgraphᚋmodelᚐVoteInput)
-	if err != nil {
-		return nil, err
-	}
-	args["input"] = arg0
-	return args, nil
-}
-
 func (ec *executionContext) field_Mutation_setCommentsRestricted_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -818,7 +770,7 @@ func (ec *executionContext) field_Mutation_updatePost_args(ctx context.Context, 
 	return args, nil
 }
 
-func (ec *executionContext) field_Mutation_upvoteComment_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+func (ec *executionContext) field_Mutation_voteComment_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
 	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "input", ec.unmarshalNVoteInput2githubᚗcomᚋtrustᚑmeᚑimᚑanᚑengineerᚋcommentsᚋgraphᚋmodelᚐVoteInput)
@@ -829,7 +781,7 @@ func (ec *executionContext) field_Mutation_upvoteComment_args(ctx context.Contex
 	return args, nil
 }
 
-func (ec *executionContext) field_Mutation_upvotePost_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+func (ec *executionContext) field_Mutation_votePost_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
 	arg0, err := graphql.ProcessArgField(ctx, rawArgs, "input", ec.unmarshalNVoteInput2githubᚗcomᚋtrustᚑmeᚑimᚑanᚑengineerᚋcommentsᚋgraphᚋmodelᚐVoteInput)
@@ -1665,15 +1617,15 @@ func (ec *executionContext) fieldContext_Mutation_setCommentsRestricted(ctx cont
 	return fc, nil
 }
 
-func (ec *executionContext) _Mutation_upvotePost(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Mutation_votePost(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
 		ec.OperationContext,
 		field,
-		ec.fieldContext_Mutation_upvotePost,
+		ec.fieldContext_Mutation_votePost,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.Mutation().UpvotePost(ctx, fc.Args["input"].(model.VoteInput))
+			return ec.resolvers.Mutation().VotePost(ctx, fc.Args["input"].(model.VoteInput))
 		},
 		nil,
 		ec.marshalNPost2ᚖgithubᚗcomᚋtrustᚑmeᚑimᚑanᚑengineerᚋcommentsᚋgraphᚋmodelᚐPost,
@@ -1682,7 +1634,7 @@ func (ec *executionContext) _Mutation_upvotePost(ctx context.Context, field grap
 	)
 }
 
-func (ec *executionContext) fieldContext_Mutation_upvotePost(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Mutation_votePost(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Mutation",
 		Field:      field,
@@ -1719,68 +1671,7 @@ func (ec *executionContext) fieldContext_Mutation_upvotePost(ctx context.Context
 		}
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Mutation_upvotePost_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
-		ec.Error(ctx, err)
-		return fc, err
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Mutation_downvotePost(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_Mutation_downvotePost,
-		func(ctx context.Context) (any, error) {
-			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.Mutation().DownvotePost(ctx, fc.Args["input"].(model.VoteInput))
-		},
-		nil,
-		ec.marshalNPost2ᚖgithubᚗcomᚋtrustᚑmeᚑimᚑanᚑengineerᚋcommentsᚋgraphᚋmodelᚐPost,
-		true,
-		true,
-	)
-}
-
-func (ec *executionContext) fieldContext_Mutation_downvotePost(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Mutation",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "id":
-				return ec.fieldContext_Post_id(ctx, field)
-			case "authorID":
-				return ec.fieldContext_Post_authorID(ctx, field)
-			case "title":
-				return ec.fieldContext_Post_title(ctx, field)
-			case "content":
-				return ec.fieldContext_Post_content(ctx, field)
-			case "createdAt":
-				return ec.fieldContext_Post_createdAt(ctx, field)
-			case "rating":
-				return ec.fieldContext_Post_rating(ctx, field)
-			case "commentsCount":
-				return ec.fieldContext_Post_commentsCount(ctx, field)
-			case "commentsRestricted":
-				return ec.fieldContext_Post_commentsRestricted(ctx, field)
-			case "comments":
-				return ec.fieldContext_Post_comments(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type Post", field.Name)
-		},
-	}
-	defer func() {
-		if r := recover(); r != nil {
-			err = ec.Recover(ctx, r)
-			ec.Error(ctx, err)
-		}
-	}()
-	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Mutation_downvotePost_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+	if fc.Args, err = ec.field_Mutation_votePost_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -1950,15 +1841,15 @@ func (ec *executionContext) fieldContext_Mutation_deleteComment(ctx context.Cont
 	return fc, nil
 }
 
-func (ec *executionContext) _Mutation_upvoteComment(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Mutation_voteComment(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
 		ec.OperationContext,
 		field,
-		ec.fieldContext_Mutation_upvoteComment,
+		ec.fieldContext_Mutation_voteComment,
 		func(ctx context.Context) (any, error) {
 			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.Mutation().UpvoteComment(ctx, fc.Args["input"].(model.VoteInput))
+			return ec.resolvers.Mutation().VoteComment(ctx, fc.Args["input"].(model.VoteInput))
 		},
 		nil,
 		ec.marshalNComment2ᚖgithubᚗcomᚋtrustᚑmeᚑimᚑanᚑengineerᚋcommentsᚋgraphᚋmodelᚐComment,
@@ -1967,7 +1858,7 @@ func (ec *executionContext) _Mutation_upvoteComment(ctx context.Context, field g
 	)
 }
 
-func (ec *executionContext) fieldContext_Mutation_upvoteComment(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Mutation_voteComment(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Mutation",
 		Field:      field,
@@ -2004,68 +1895,7 @@ func (ec *executionContext) fieldContext_Mutation_upvoteComment(ctx context.Cont
 		}
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Mutation_upvoteComment_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
-		ec.Error(ctx, err)
-		return fc, err
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Mutation_downvoteComment(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	return graphql.ResolveField(
-		ctx,
-		ec.OperationContext,
-		field,
-		ec.fieldContext_Mutation_downvoteComment,
-		func(ctx context.Context) (any, error) {
-			fc := graphql.GetFieldContext(ctx)
-			return ec.resolvers.Mutation().DownvoteComment(ctx, fc.Args["input"].(model.VoteInput))
-		},
-		nil,
-		ec.marshalNComment2ᚖgithubᚗcomᚋtrustᚑmeᚑimᚑanᚑengineerᚋcommentsᚋgraphᚋmodelᚐComment,
-		true,
-		true,
-	)
-}
-
-func (ec *executionContext) fieldContext_Mutation_downvoteComment(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Mutation",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "id":
-				return ec.fieldContext_Comment_id(ctx, field)
-			case "postID":
-				return ec.fieldContext_Comment_postID(ctx, field)
-			case "authorID":
-				return ec.fieldContext_Comment_authorID(ctx, field)
-			case "text":
-				return ec.fieldContext_Comment_text(ctx, field)
-			case "createdAt":
-				return ec.fieldContext_Comment_createdAt(ctx, field)
-			case "rating":
-				return ec.fieldContext_Comment_rating(ctx, field)
-			case "parentID":
-				return ec.fieldContext_Comment_parentID(ctx, field)
-			case "children":
-				return ec.fieldContext_Comment_children(ctx, field)
-			case "parentTree":
-				return ec.fieldContext_Comment_parentTree(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type Comment", field.Name)
-		},
-	}
-	defer func() {
-		if r := recover(); r != nil {
-			err = ec.Recover(ctx, r)
-			ec.Error(ctx, err)
-		}
-	}()
-	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Mutation_downvoteComment_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+	if fc.Args, err = ec.field_Mutation_voteComment_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -4512,7 +4342,7 @@ func (ec *executionContext) unmarshalInputVoteInput(ctx context.Context, obj any
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"id", "voterID"}
+	fieldsInOrder := [...]string{"id", "voterID", "value"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -4533,6 +4363,13 @@ func (ec *executionContext) unmarshalInputVoteInput(ctx context.Context, obj any
 				return it, err
 			}
 			it.VoterID = data
+		case "value":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("value"))
+			data, err := ec.unmarshalNInt2int32(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Value = data
 		}
 	}
 
@@ -4789,16 +4626,9 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
-		case "upvotePost":
+		case "votePost":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
-				return ec._Mutation_upvotePost(ctx, field)
-			})
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		case "downvotePost":
-			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
-				return ec._Mutation_downvotePost(ctx, field)
+				return ec._Mutation_votePost(ctx, field)
 			})
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
@@ -4824,16 +4654,9 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
-		case "upvoteComment":
+		case "voteComment":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
-				return ec._Mutation_upvoteComment(ctx, field)
-			})
-			if out.Values[i] == graphql.Null {
-				out.Invalids++
-			}
-		case "downvoteComment":
-			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
-				return ec._Mutation_downvoteComment(ctx, field)
+				return ec._Mutation_voteComment(ctx, field)
 			})
 			if out.Values[i] == graphql.Null {
 				out.Invalids++

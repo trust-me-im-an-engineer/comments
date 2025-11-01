@@ -38,13 +38,13 @@ func UpdatePost_ModelToDomain(m *model.UpdatePostInput) *domain.UpdatePostInput 
 	}
 }
 
-func ModelVoteInputToDomainPostVote(m *model.VoteInput, value int8) *domain.PostVote {
+func ModelVoteInputToDomainPostVote(m *model.VoteInput) *domain.PostVote {
 	id, _ := strconv.Atoi(m.ID) // id already validated
 	return &domain.PostVote{
 		PostID: id,
 		Vote: domain.Vote{
 			VoterID: m.VoterID,
-			Value:   value,
+			Value:   int8(m.Value),
 		},
 	}
 }

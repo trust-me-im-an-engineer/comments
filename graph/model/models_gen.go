@@ -97,6 +97,7 @@ type UpdatePostInput struct {
 type VoteInput struct {
 	ID      string    `json:"id"`
 	VoterID uuid.UUID `json:"voterID"`
+	Value   int32     `json:"value"`
 }
 
 type SortOrder string

@@ -99,29 +99,24 @@ func (r *mutationResolver) SetCommentsRestricted(ctx context.Context, postID str
 	return converter.Post_DomainToModel(domainPost), nil
 }
 
-// UpvotePost is the resolver for the upvotePost field.
-func (r *mutationResolver) UpvotePost(ctx context.Context, input model.VoteInput) (*model.Post, error) {
+// VotePost is the resolver for the votePost field.
+func (r *mutationResolver) VotePost(ctx context.Context, input model.VoteInput) (*model.Post, error) {
 	if err := validator.ValidateVoteInput(input); err != nil {
 		return nil, invalidInputWrap(err)
 	}
 
-	domainInput := converter.ModelVoteInputToDomainPostVote(&input, 1) // 1 for upvote
+	domainInput := converter.ModelVoteInputToDomainPostVote(&input)
 
 	domainPost, err := r.postService.VotePost(ctx, domainInput)
 	if errors.Is(err, storage.PostNotFound) {
 		return nil, storage.PostNotFound
 	}
 	if err != nil {
-		slog.Error("post service failed to upvote post", "error", err)
+		slog.Error("post service failed to downvote post", "error", err)
 		return nil, InternalServerErr
 	}
 
 	return converter.Post_DomainToModel(domainPost), nil
-}
-
-// DownvotePost is the resolver for the downvotePost field.
-func (r *mutationResolver) DownvotePost(ctx context.Context, input model.VoteInput) (*model.Post, error) {
-	panic(fmt.Errorf("not implemented: DownvotePost - downvotePost"))
 }
 
 // CreateComment is the resolver for the createComment field.
@@ -139,14 +134,9 @@ func (r *mutationResolver) DeleteComment(ctx context.Context, id string) (bool, 
 	panic(fmt.Errorf("not implemented: DeleteComment - deleteComment"))
 }
 
-// UpvoteComment is the resolver for the upvoteComment field.
-func (r *mutationResolver) UpvoteComment(ctx context.Context, input model.VoteInput) (*model.Comment, error) {
-	panic(fmt.Errorf("not implemented: UpvoteComment - upvoteComment"))
-}
-
-// DownvoteComment is the resolver for the downvoteComment field.
-func (r *mutationResolver) DownvoteComment(ctx context.Context, input model.VoteInput) (*model.Comment, error) {
-	panic(fmt.Errorf("not implemented: DownvoteComment - downvoteComment"))
+// VoteComment is the resolver for the voteComment field.
+func (r *mutationResolver) VoteComment(ctx context.Context, input model.VoteInput) (*model.Comment, error) {
+	panic(fmt.Errorf("not implemented: VoteComment - voteComment"))
 }
 
 // Comments is the resolver for the comments field.
@@ -209,13 +199,3 @@ type subscriptionResolver struct{ *Resolver }
 func invalidInputWrap(err error) error {
 	return fmt.Errorf("Invalid input: %w", err)
 }
-
-// !!! WARNING !!!
-// The code below was going to be deleted when updating resolvers. It has been copied here so you have
-// one last chance to move it out of harms way if you want. There are two reasons this happens:
-//  - When renaming or deleting a resolver the old code will be put in here. You can safely delete
-//    it when you're done.
-//  - You have helper methods in this file. Move them out to keep these resolver files clean.
-/*
-
- */

@@ -19,6 +19,7 @@ var (
 	TooLongContentErr  = errors.New("post content cannot be longer than " + strconv.Itoa(MaxContentLen) + " characters")
 	NothingToUpdateErr = errors.New("at least one field needed to update")
 	InvalidID          = errors.New("id must be valid integer")
+	InvalidVoteValue   = errors.New("vote value must be 1 or -1")
 )
 
 func ValidateCreatePostInput(in model.CreatePostInput) error {
@@ -74,6 +75,9 @@ func ValidateUpdatePostInput(in model.UpdatePostInput) error {
 func ValidateVoteInput(in model.VoteInput) error {
 	if _, err := strconv.Atoi(in.ID); err != nil {
 		return InvalidID
+	}
+	if in.Value != 1 && in.Value != -1 {
+		return InvalidVoteValue
 	}
 	return nil
 }

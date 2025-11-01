@@ -83,6 +83,7 @@ input UpdateCommentInput {
 input VoteInput {
   id: ID!
   voterID: UUID!
+  value: Int!
 }
 
 type Mutation {
@@ -91,15 +92,13 @@ type Mutation {
   deletePost(id: ID!): Boolean!
   setCommentsRestricted(postID: ID!, restricted: Boolean!): Post!
 
-  upvotePost(input: VoteInput!): Post!
-  downvotePost(input: VoteInput!): Post!
+  votePost(input: VoteInput!): Post!
 
   createComment(input: CreateCommentInput!): Comment!
   updateComment(input: UpdateCommentInput!): Comment!
   deleteComment(id: ID!): Boolean!
 
-  upvoteComment(input: VoteInput!): Comment!
-  downvoteComment(input: VoteInput!): Comment!
+  voteComment(input: VoteInput!): Comment!
 }
 
 
