@@ -21,7 +21,7 @@ func (s *Service) DeleteComment(ctx context.Context, domainID int) error {
 }
 
 func (s *Service) UpdateComment(ctx context.Context, domainInput *domain.UpdateCommentInput) (*domain.Comment, error) {
-	comment, err := s.storage.UpdateComment(ctx, domainInput)
+	comment, err := s.storage.UpdateCommentIfNotDeleted(ctx, domainInput)
 	if err != nil {
 		return nil, fmt.Errorf("storage failed to update comment: %w", err)
 	}

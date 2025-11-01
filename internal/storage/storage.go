@@ -14,6 +14,6 @@ type Storage interface {
 	SetCommentsRestricted(ctx context.Context, id int, restricted bool) (*domain.Post, error)
 	VotePost(ctx context.Context, vote *domain.PostVote) (*domain.Post, error)
 	CreateComment(ctx context.Context, input *domain.CreateCommentInput) (*domain.Comment, error)
-	UpdateComment(ctx context.Context, input *domain.UpdateCommentInput) (*domain.Comment, error)
+	UpdateCommentIfNotDeleted(ctx context.Context, input *domain.UpdateCommentInput) (*domain.Comment, error)
 	DeleteComment(ctx context.Context, id int) error
 }

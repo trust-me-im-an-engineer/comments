@@ -128,6 +128,9 @@ func (r *mutationResolver) CreateComment(ctx context.Context, input model.Create
 	domainInput := converter.CreateCommentInput_ModelToDomain(&input)
 
 	domainComment, err := r.commentService.CreateComment(ctx, domainInput)
+	if errors.Is(err, errs.ParentCommentDeleted) {
+		return nil, errs.ParentCommentDeleted
+	}
 	if err != nil {
 		slog.Error("comment service failed to create comment", "error", err)
 		return nil, InternalServerErr
