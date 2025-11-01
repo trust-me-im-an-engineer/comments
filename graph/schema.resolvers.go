@@ -82,7 +82,21 @@ func (r *mutationResolver) DeletePost(ctx context.Context, id string) (bool, err
 
 // SetCommentsRestricted is the resolver for the setCommentsRestricted field.
 func (r *mutationResolver) SetCommentsRestricted(ctx context.Context, postID string, restricted bool) (*model.Post, error) {
-	panic(fmt.Errorf("not implemented: SetCommentsRestricted - setCommentsRestricted"))
+	internalID, err := strconv.Atoi(postID)
+	if err != nil {
+		return nil, invalidInputWrap(fmt.Errorf("invalid post id: %w", err))
+	}
+
+	post, err := r.postService.SetCommentsRestricted(ctx, internalID, restricted)
+	if errors.Is(err, storage.PostNotFound) {
+		return nil, storage.PostNotFound
+	}
+	if err != nil {
+		slog.Error("post service failed to set comments restricted", "id", internalID, "error", err)
+		return nil, InternalServerErr
+	}
+
+	return converter.PostToGQL(post), nil
 }
 
 // UpvotePost is the resolver for the upvotePost field.

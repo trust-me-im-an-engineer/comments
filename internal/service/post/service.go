@@ -59,3 +59,13 @@ func (s *Service) DeletePost(ctx context.Context, id int) error {
 	slog.Debug("post deleted", "postID", id)
 	return nil
 }
+
+func (s *Service) SetCommentsRestricted(ctx context.Context, internalID int, restricted bool) (*domain.Post, error) {
+	post, err := s.storage.SetCommentsRestricted(ctx, internalID, restricted)
+	if err != nil {
+		return nil, fmt.Errorf("storage failed to set comments restricted: %w", err)
+	}
+
+	slog.Debug("comments restriction changed", "postID", post.ID, "restricted", post.CommentsRestricted)
+	return post, nil
+}
