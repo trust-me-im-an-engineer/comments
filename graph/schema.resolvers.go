@@ -30,15 +30,15 @@ func (r *mutationResolver) CreatePost(ctx context.Context, input model.CreatePos
 		return nil, invalidInputWrap(err)
 	}
 
-	internalInput := converter.CreatePostInputToInternal(&input)
+	domainInput := converter.CreatePostInput_ModelToDomain(&input)
 
-	post, err := r.postService.CreatePost(ctx, internalInput)
+	domainPost, err := r.postService.CreatePost(ctx, domainInput)
 	if err != nil {
 		slog.Error("post service failed to create post", "error", err)
 		return nil, InternalServerErr
 	}
 
-	return converter.PostToGQL(post), nil
+	return converter.Post_DomainToModel(domainPost), nil
 }
 
 // UpdatePost is the resolver for the updatePost field.
@@ -47,9 +47,9 @@ func (r *mutationResolver) UpdatePost(ctx context.Context, input model.UpdatePos
 		return nil, invalidInputWrap(err)
 	}
 
-	internalInput := converter.UpdatePostToInternal(&input)
+	domainInput := converter.UpdatePost_ModelToDomain(&input)
 
-	post, err := r.postService.UpdatePost(ctx, internalInput)
+	domainPost, err := r.postService.UpdatePost(ctx, domainInput)
 	if errors.Is(err, storage.PostNotFound) {
 		return nil, storage.PostNotFound
 	}
@@ -58,22 +58,22 @@ func (r *mutationResolver) UpdatePost(ctx context.Context, input model.UpdatePos
 		return nil, InternalServerErr
 	}
 
-	return converter.PostToGQL(post), nil
+	return converter.Post_DomainToModel(domainPost), nil
 }
 
 // DeletePost is the resolver for the deletePost field.
 func (r *mutationResolver) DeletePost(ctx context.Context, id string) (bool, error) {
-	internalID, err := strconv.Atoi(id)
+	domainID, err := strconv.Atoi(id)
 	if err != nil {
 		return false, invalidInputWrap(fmt.Errorf("invalid post id: %w", err))
 	}
 
-	err = r.postService.DeletePost(ctx, internalID)
+	err = r.postService.DeletePost(ctx, domainID)
 	if errors.Is(err, storage.PostNotFound) {
 		return false, storage.PostNotFound
 	}
 	if err != nil {
-		slog.Error("post service failed to delete post", "id", internalID, "error", err)
+		slog.Error("post service failed to delete post", "id", domainID, "error", err)
 		return false, InternalServerErr
 	}
 
@@ -82,21 +82,21 @@ func (r *mutationResolver) DeletePost(ctx context.Context, id string) (bool, err
 
 // SetCommentsRestricted is the resolver for the setCommentsRestricted field.
 func (r *mutationResolver) SetCommentsRestricted(ctx context.Context, postID string, restricted bool) (*model.Post, error) {
-	internalID, err := strconv.Atoi(postID)
+	domainID, err := strconv.Atoi(postID)
 	if err != nil {
 		return nil, invalidInputWrap(fmt.Errorf("invalid post id: %w", err))
 	}
 
-	post, err := r.postService.SetCommentsRestricted(ctx, internalID, restricted)
+	domainPost, err := r.postService.SetCommentsRestricted(ctx, domainID, restricted)
 	if errors.Is(err, storage.PostNotFound) {
 		return nil, storage.PostNotFound
 	}
 	if err != nil {
-		slog.Error("post service failed to set comments restricted", "id", internalID, "error", err)
+		slog.Error("post service failed to set comments restricted", "id", domainID, "error", err)
 		return nil, InternalServerErr
 	}
 
-	return converter.PostToGQL(post), nil
+	return converter.Post_DomainToModel(domainPost), nil
 }
 
 // UpvotePost is the resolver for the upvotePost field.
@@ -105,9 +105,9 @@ func (r *mutationResolver) UpvotePost(ctx context.Context, input model.VoteInput
 		return nil, invalidInputWrap(err)
 	}
 
-	internalInput := converter.VoteInputToInternalPostVote(&input, 1) // 1 for upvote
+	domainInput := converter.ModelVoteInputToDomainPostVote(&input, 1) // 1 for upvote
 
-	post, err := r.postService.VotePost(ctx, internalInput)
+	domainPost, err := r.postService.VotePost(ctx, domainInput)
 	if errors.Is(err, storage.PostNotFound) {
 		return nil, storage.PostNotFound
 	}
@@ -116,7 +116,7 @@ func (r *mutationResolver) UpvotePost(ctx context.Context, input model.VoteInput
 		return nil, InternalServerErr
 	}
 
-	return converter.PostToGQL(post), nil
+	return converter.Post_DomainToModel(domainPost), nil
 }
 
 // DownvotePost is the resolver for the downvotePost field.
@@ -167,7 +167,7 @@ func (r *queryResolver) Post(ctx context.Context, id string) (*model.Post, error
 		return nil, InternalServerErr
 	}
 
-	return converter.PostToGQL(internalPost), nil
+	return converter.Post_DomainToModel(internalPost), nil
 }
 
 // Posts is the resolver for the posts field.

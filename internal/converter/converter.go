@@ -7,43 +7,43 @@ import (
 	"github.com/trust-me-im-an-engineer/comments/internal/domain"
 )
 
-func CreatePostInputToInternal(gql *model.CreatePostInput) *domain.CreatePostInput {
+func CreatePostInput_ModelToDomain(m *model.CreatePostInput) *domain.CreatePostInput {
 	return &domain.CreatePostInput{
-		AuthorID: gql.AuthorID,
-		Title:    gql.Title,
-		Content:  gql.Content,
+		AuthorID: m.AuthorID,
+		Title:    m.Title,
+		Content:  m.Content,
 	}
 }
 
-func PostToGQL(internal *domain.Post) *model.Post {
+func Post_DomainToModel(d *domain.Post) *model.Post {
 
 	return &model.Post{
-		ID:                 strconv.Itoa(internal.ID),
-		AuthorID:           internal.AuthorID,
-		Title:              internal.Title,
-		Content:            internal.Content,
-		CreatedAt:          internal.CreatedAt,
-		Rating:             internal.Rating,
-		CommentsCount:      internal.CommentsCount,
-		CommentsRestricted: internal.CommentsRestricted,
+		ID:                 strconv.Itoa(d.ID),
+		AuthorID:           d.AuthorID,
+		Title:              d.Title,
+		Content:            d.Content,
+		CreatedAt:          d.CreatedAt,
+		Rating:             d.Rating,
+		CommentsCount:      d.CommentsCount,
+		CommentsRestricted: d.CommentsRestricted,
 	}
 }
 
-func UpdatePostToInternal(gql *model.UpdatePostInput) *domain.UpdatePostInput {
-	id, _ := strconv.Atoi(gql.ID) // id already validated
+func UpdatePost_ModelToDomain(m *model.UpdatePostInput) *domain.UpdatePostInput {
+	id, _ := strconv.Atoi(m.ID) // id already validated
 	return &domain.UpdatePostInput{
 		ID:      id,
-		Title:   gql.Title,
-		Content: gql.Content,
+		Title:   m.Title,
+		Content: m.Content,
 	}
 }
 
-func VoteInputToInternalPostVote(gql *model.VoteInput, value int8) *domain.PostVote {
-	id, _ := strconv.Atoi(gql.ID) // id already validated
+func ModelVoteInputToDomainPostVote(m *model.VoteInput, value int8) *domain.PostVote {
+	id, _ := strconv.Atoi(m.ID) // id already validated
 	return &domain.PostVote{
 		PostID: id,
 		Vote: domain.Vote{
-			VoterID: gql.VoterID,
+			VoterID: m.VoterID,
 			Value:   value,
 		},
 	}
