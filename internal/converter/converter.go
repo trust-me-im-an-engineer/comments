@@ -87,3 +87,14 @@ func UpdateCommentInput_ModelToDomain(m *model.UpdateCommentInput) *domain.Updat
 		Text: m.Text,
 	}
 }
+
+func ModelVoteInputToDomainCommentVote(m *model.VoteInput) *domain.CommentVote {
+	id, _ := strconv.Atoi(m.ID) // id already validated
+	return &domain.CommentVote{
+		CommentID: id,
+		Vote: domain.Vote{
+			VoterID: m.VoterID,
+			Value:   int8(m.Value),
+		},
+	}
+}

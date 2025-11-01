@@ -16,4 +16,5 @@ type Storage interface {
 	CreateComment(ctx context.Context, input *domain.CreateCommentInput) (*domain.Comment, error)
 	UpdateCommentIfNotDeleted(ctx context.Context, input *domain.UpdateCommentInput) (*domain.Comment, error)
 	DeleteComment(ctx context.Context, id int) error
+	VoteCommentIfNotDeleted(ctx context.Context, input *domain.CommentVote) (*domain.Comment, error)
 }

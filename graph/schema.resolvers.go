@@ -186,7 +186,25 @@ func (r *mutationResolver) DeleteComment(ctx context.Context, id string) (bool, 
 
 // VoteComment is the resolver for the voteComment field.
 func (r *mutationResolver) VoteComment(ctx context.Context, input model.VoteInput) (*model.Comment, error) {
-	panic(fmt.Errorf("not implemented: VoteComment - voteComment"))
+	if err := validator.ValidateVoteInput(input); err != nil {
+		return nil, invalidInputWrap(err)
+	}
+
+	domainInput := converter.ModelVoteInputToDomainCommentVote(&input)
+
+	domainComment, err := r.commentService.VoteComment(ctx, domainInput)
+	if errors.Is(err, errs.CommentNotFound) {
+		return nil, errs.CommentNotFound
+	}
+	if errors.Is(err, errs.CommentDeleted) {
+		return nil, errs.CommentDeleted
+	}
+	if err != nil {
+		slog.Error("comment service failed to downvote comment", "error", err)
+		return nil, InternalServerErr
+	}
+
+	return converter.Comment_DomainToModel(domainComment), nil
 }
 
 // Comments is the resolver for the comments field.

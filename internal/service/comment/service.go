@@ -12,6 +12,14 @@ type Service struct {
 	storage storage.Storage
 }
 
+func (s *Service) VoteComment(ctx context.Context, domainInput *domain.CommentVote) (*domain.Comment, error) {
+	comment, err := s.storage.VoteCommentIfNotDeleted(ctx, domainInput)
+	if err != nil {
+		return nil, fmt.Errorf("storage failed to vote comment: %w", err)
+	}
+	return comment, nil
+}
+
 func (s *Service) DeleteComment(ctx context.Context, domainID int) error {
 	err := s.storage.DeleteComment(ctx, domainID)
 	if err != nil {
