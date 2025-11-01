@@ -18,7 +18,7 @@ var (
 	TooLongTitleErr    = errors.New("post title cannot be longer than " + strconv.Itoa(MaxTitleLen) + " characters")
 	TooLongContentErr  = errors.New("post content cannot be longer than " + strconv.Itoa(MaxContentLen) + " characters")
 	NothingToUpdateErr = errors.New("at least one field needed to update")
-	InvalidPostID      = errors.New("post id must be valid integer")
+	InvalidID          = errors.New("id must be valid integer")
 )
 
 func ValidateCreatePostInput(in model.CreatePostInput) error {
@@ -50,7 +50,7 @@ func validateContent(content string) error {
 
 func ValidateUpdatePostInput(in model.UpdatePostInput) error {
 	if _, err := strconv.Atoi(in.ID); err != nil {
-		return InvalidPostID
+		return InvalidID
 	}
 
 	if in.Title == nil && in.Content == nil {
@@ -68,5 +68,12 @@ func ValidateUpdatePostInput(in model.UpdatePostInput) error {
 		}
 	}
 
+	return nil
+}
+
+func ValidateVoteInput(in model.VoteInput) error {
+	if _, err := strconv.Atoi(in.ID); err != nil {
+		return InvalidID
+	}
 	return nil
 }

@@ -69,3 +69,11 @@ func (s *Service) SetCommentsRestricted(ctx context.Context, internalID int, res
 	slog.Debug("comments restriction changed", "postID", post.ID, "restricted", post.CommentsRestricted)
 	return post, nil
 }
+
+func (s *Service) VotePost(ctx context.Context, internalInput *domain.PostVote) (*domain.Post, error) {
+	post, err := s.storage.VotePost(ctx, internalInput)
+	if err != nil {
+		return nil, fmt.Errorf("storage failed to vote post: %w", err)
+	}
+	return post, nil
+}

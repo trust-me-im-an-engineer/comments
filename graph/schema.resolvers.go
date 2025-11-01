@@ -101,7 +101,22 @@ func (r *mutationResolver) SetCommentsRestricted(ctx context.Context, postID str
 
 // UpvotePost is the resolver for the upvotePost field.
 func (r *mutationResolver) UpvotePost(ctx context.Context, input model.VoteInput) (*model.Post, error) {
-	panic(fmt.Errorf("not implemented: UpvotePost - upvotePost"))
+	if err := validator.ValidateVoteInput(input); err != nil {
+		return nil, invalidInputWrap(err)
+	}
+
+	internalInput := converter.VoteInputToInternalPostVote(&input, 1) // 1 for upvote
+
+	post, err := r.postService.VotePost(ctx, internalInput)
+	if errors.Is(err, storage.PostNotFound) {
+		return nil, storage.PostNotFound
+	}
+	if err != nil {
+		slog.Error("post service failed to upvote post", "error", err)
+		return nil, InternalServerErr
+	}
+
+	return converter.PostToGQL(post), nil
 }
 
 // DownvotePost is the resolver for the downvotePost field.

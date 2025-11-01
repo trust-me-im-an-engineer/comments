@@ -37,3 +37,14 @@ func UpdatePostToInternal(gql *model.UpdatePostInput) *domain.UpdatePostInput {
 		Content: gql.Content,
 	}
 }
+
+func VoteInputToInternalPostVote(gql *model.VoteInput, value int8) *domain.PostVote {
+	id, _ := strconv.Atoi(gql.ID) // id already validated
+	return &domain.PostVote{
+		PostID: id,
+		Vote: domain.Vote{
+			VoterID: gql.VoterID,
+			Value:   value,
+		},
+	}
+}
