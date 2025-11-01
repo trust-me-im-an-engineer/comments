@@ -19,6 +19,7 @@ type Comment struct {
 	Text       string             `json:"text"`
 	CreatedAt  time.Time          `json:"createdAt"`
 	Rating     int32              `json:"rating"`
+	Deleted    bool               `json:"deleted"`
 	ParentID   *string            `json:"parentID,omitempty"`
 	Children   *CommentConnection `json:"children"`
 	ParentTree []*Comment         `json:"parentTree"`

@@ -65,7 +65,7 @@ func (r *mutationResolver) UpdatePost(ctx context.Context, input model.UpdatePos
 func (r *mutationResolver) DeletePost(ctx context.Context, id string) (bool, error) {
 	domainID, err := strconv.Atoi(id)
 	if err != nil {
-		return false, invalidInputWrap(fmt.Errorf("invalid post id: %w", err))
+		return false, invalidInputWrap(errs.InvalidIDErr)
 	}
 
 	err = r.postService.DeletePost(ctx, domainID)
@@ -148,6 +148,9 @@ func (r *mutationResolver) UpdateComment(ctx context.Context, input model.Update
 	if errors.Is(err, errs.CommentNotFound) {
 		return nil, errs.CommentNotFound
 	}
+	if errors.Is(err, errs.CommentDeleted) {
+		return nil, errs.CommentDeleted
+	}
 	if err != nil {
 		slog.Error("comment service failed to update comment", "error", err)
 		return nil, InternalServerErr
@@ -158,7 +161,24 @@ func (r *mutationResolver) UpdateComment(ctx context.Context, input model.Update
 
 // DeleteComment is the resolver for the deleteComment field.
 func (r *mutationResolver) DeleteComment(ctx context.Context, id string) (bool, error) {
-	panic(fmt.Errorf("not implemented: DeleteComment - deleteComment"))
+	domainID, err := strconv.Atoi(id)
+	if err != nil {
+		return false, invalidInputWrap(errs.InvalidIDErr)
+	}
+
+	err = r.commentService.DeleteComment(ctx, domainID)
+	if errors.Is(err, errs.CommentNotFound) {
+		return false, errs.CommentNotFound
+	}
+	if errors.Is(err, errs.CommentDeleted) {
+		return false, errs.CommentDeleted
+	}
+	if err != nil {
+		slog.Error("comment service failed to delete comment", "id", domainID, "error", err)
+		return false, InternalServerErr
+	}
+
+	return true, nil
 }
 
 // VoteComment is the resolver for the voteComment field.

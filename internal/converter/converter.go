@@ -16,7 +16,6 @@ func CreatePostInput_ModelToDomain(m *model.CreatePostInput) *domain.CreatePostI
 }
 
 func Post_DomainToModel(d *domain.Post) *model.Post {
-
 	return &model.Post{
 		ID:                 strconv.Itoa(d.ID),
 		AuthorID:           d.AuthorID,
@@ -65,15 +64,20 @@ func CreateCommentInput_ModelToDomain(m *model.CreateCommentInput) *domain.Creat
 }
 
 func Comment_DomainToModel(d *domain.Comment) *model.Comment {
-	return &model.Comment{
-		ID:        strconv.Itoa(d.ID),
-		PostID:    strconv.Itoa(d.PostID),
-		AuthorID:  d.AuthorID,
-		Text:      d.Text,
+	m := &model.Comment{
+		ID:       strconv.Itoa(d.ID),
+		PostID:   strconv.Itoa(d.PostID),
+		AuthorID: d.AuthorID,
+		// Text:      d.Text,
 		CreatedAt: d.CreatedAt,
 		Rating:    d.Rating,
 		ParentID:  nil,
 	}
+
+	if d.Text != nil {
+		m.Text = *d.Text
+	}
+	return m
 }
 
 func UpdateCommentInput_ModelToDomain(m *model.UpdateCommentInput) *domain.UpdateCommentInput {

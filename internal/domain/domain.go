@@ -22,7 +22,7 @@ type Comment struct {
 	ID        int       `db:"id"`
 	PostID    int       `db:"post_id"`
 	AuthorID  uuid.UUID `db:"author_id"`
-	Text      string    `db:"text"`
+	Text      *string   `db:"text"`
 	CreatedAt time.Time `db:"created_at"`
 	Rating    int32     `db:"rating"`
 	ParentID  *int      `db:"parent_id"`

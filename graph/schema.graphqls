@@ -63,6 +63,7 @@ type Comment {
   text: String!
   createdAt: Time!
   rating: Int!
+  deleted: Boolean!
   parentID: ID
   children(sort: SortOrder = RATING, limit: Int = 6, cursor: String, depth: Int = 2): CommentConnection! @goField(forceResolver: true)
   parentTree(depth: Int = 1): [Comment!]!

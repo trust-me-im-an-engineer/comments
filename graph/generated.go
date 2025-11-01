@@ -56,6 +56,7 @@ type ComplexityRoot struct {
 		AuthorID   func(childComplexity int) int
 		Children   func(childComplexity int, sort *model.SortOrder, limit *int32, cursor *string, depth *int32) int
 		CreatedAt  func(childComplexity int) int
+		Deleted    func(childComplexity int) int
 		ID         func(childComplexity int) int
 		ParentID   func(childComplexity int) int
 		ParentTree func(childComplexity int, depth *int32) int
@@ -192,6 +193,12 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 		}
 
 		return e.complexity.Comment.CreatedAt(childComplexity), true
+	case "Comment.deleted":
+		if e.complexity.Comment.Deleted == nil {
+			break
+		}
+
+		return e.complexity.Comment.Deleted(childComplexity), true
 	case "Comment.id":
 		if e.complexity.Comment.ID == nil {
 			break
@@ -1109,6 +1116,35 @@ func (ec *executionContext) fieldContext_Comment_rating(_ context.Context, field
 	return fc, nil
 }
 
+func (ec *executionContext) _Comment_deleted(ctx context.Context, field graphql.CollectedField, obj *model.Comment) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_Comment_deleted,
+		func(ctx context.Context) (any, error) {
+			return obj.Deleted, nil
+		},
+		nil,
+		ec.marshalNBoolean2bool,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_Comment_deleted(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Comment",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Comment_parentID(ctx context.Context, field graphql.CollectedField, obj *model.Comment) (ret graphql.Marshaler) {
 	return graphql.ResolveField(
 		ctx,
@@ -1221,6 +1257,8 @@ func (ec *executionContext) fieldContext_Comment_parentTree(ctx context.Context,
 				return ec.fieldContext_Comment_createdAt(ctx, field)
 			case "rating":
 				return ec.fieldContext_Comment_rating(ctx, field)
+			case "deleted":
+				return ec.fieldContext_Comment_deleted(ctx, field)
 			case "parentID":
 				return ec.fieldContext_Comment_parentID(ctx, field)
 			case "children":
@@ -1380,6 +1418,8 @@ func (ec *executionContext) fieldContext_CommentEdge_node(_ context.Context, fie
 				return ec.fieldContext_Comment_createdAt(ctx, field)
 			case "rating":
 				return ec.fieldContext_Comment_rating(ctx, field)
+			case "deleted":
+				return ec.fieldContext_Comment_deleted(ctx, field)
 			case "parentID":
 				return ec.fieldContext_Comment_parentID(ctx, field)
 			case "children":
@@ -1715,6 +1755,8 @@ func (ec *executionContext) fieldContext_Mutation_createComment(ctx context.Cont
 				return ec.fieldContext_Comment_createdAt(ctx, field)
 			case "rating":
 				return ec.fieldContext_Comment_rating(ctx, field)
+			case "deleted":
+				return ec.fieldContext_Comment_deleted(ctx, field)
 			case "parentID":
 				return ec.fieldContext_Comment_parentID(ctx, field)
 			case "children":
@@ -1776,6 +1818,8 @@ func (ec *executionContext) fieldContext_Mutation_updateComment(ctx context.Cont
 				return ec.fieldContext_Comment_createdAt(ctx, field)
 			case "rating":
 				return ec.fieldContext_Comment_rating(ctx, field)
+			case "deleted":
+				return ec.fieldContext_Comment_deleted(ctx, field)
 			case "parentID":
 				return ec.fieldContext_Comment_parentID(ctx, field)
 			case "children":
@@ -1878,6 +1922,8 @@ func (ec *executionContext) fieldContext_Mutation_voteComment(ctx context.Contex
 				return ec.fieldContext_Comment_createdAt(ctx, field)
 			case "rating":
 				return ec.fieldContext_Comment_rating(ctx, field)
+			case "deleted":
+				return ec.fieldContext_Comment_deleted(ctx, field)
 			case "parentID":
 				return ec.fieldContext_Comment_parentID(ctx, field)
 			case "children":
@@ -2532,6 +2578,8 @@ func (ec *executionContext) fieldContext_Query_comment(ctx context.Context, fiel
 				return ec.fieldContext_Comment_createdAt(ctx, field)
 			case "rating":
 				return ec.fieldContext_Comment_rating(ctx, field)
+			case "deleted":
+				return ec.fieldContext_Comment_deleted(ctx, field)
 			case "parentID":
 				return ec.fieldContext_Comment_parentID(ctx, field)
 			case "children":
@@ -2701,6 +2749,8 @@ func (ec *executionContext) fieldContext_Subscription_newComment(ctx context.Con
 				return ec.fieldContext_Comment_createdAt(ctx, field)
 			case "rating":
 				return ec.fieldContext_Comment_rating(ctx, field)
+			case "deleted":
+				return ec.fieldContext_Comment_deleted(ctx, field)
 			case "parentID":
 				return ec.fieldContext_Comment_parentID(ctx, field)
 			case "children":
@@ -4422,6 +4472,11 @@ func (ec *executionContext) _Comment(ctx context.Context, sel ast.SelectionSet, 
 			}
 		case "rating":
 			out.Values[i] = ec._Comment_rating(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&out.Invalids, 1)
+			}
+		case "deleted":
+			out.Values[i] = ec._Comment_deleted(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&out.Invalids, 1)
 			}

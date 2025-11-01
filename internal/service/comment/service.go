@@ -12,6 +12,14 @@ type Service struct {
 	storage storage.Storage
 }
 
+func (s *Service) DeleteComment(ctx context.Context, domainID int) error {
+	err := s.storage.DeleteComment(ctx, domainID)
+	if err != nil {
+		return fmt.Errorf("storage failed to delete comment: %w", err)
+	}
+	return nil
+}
+
 func (s *Service) UpdateComment(ctx context.Context, domainInput *domain.UpdateCommentInput) (*domain.Comment, error) {
 	comment, err := s.storage.UpdateComment(ctx, domainInput)
 	if err != nil {
