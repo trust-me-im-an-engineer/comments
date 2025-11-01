@@ -138,7 +138,22 @@ func (r *mutationResolver) CreateComment(ctx context.Context, input model.Create
 
 // UpdateComment is the resolver for the updateComment field.
 func (r *mutationResolver) UpdateComment(ctx context.Context, input model.UpdateCommentInput) (*model.Comment, error) {
-	panic(fmt.Errorf("not implemented: UpdateComment - updateComment"))
+	if err := validator.ValidateUpdateCommentInput(input); err != nil {
+		return nil, invalidInputWrap(err)
+	}
+
+	domainInput := converter.UpdateCommentInput_ModelToDomain(&input)
+
+	domainComment, err := r.commentService.UpdateComment(ctx, domainInput)
+	if errors.Is(err, errs.CommentNotFound) {
+		return nil, errs.CommentNotFound
+	}
+	if err != nil {
+		slog.Error("comment service failed to update comment", "error", err)
+		return nil, InternalServerErr
+	}
+
+	return converter.Comment_DomainToModel(domainComment), nil
 }
 
 // DeleteComment is the resolver for the deleteComment field.

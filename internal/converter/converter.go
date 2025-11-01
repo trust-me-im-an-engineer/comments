@@ -75,3 +75,11 @@ func Comment_DomainToModel(d *domain.Comment) *model.Comment {
 		ParentID:  nil,
 	}
 }
+
+func UpdateCommentInput_ModelToDomain(m *model.UpdateCommentInput) *domain.UpdateCommentInput {
+	id, _ := strconv.Atoi(m.ID) // id already validated
+	return &domain.UpdateCommentInput{
+		ID:   id,
+		Text: m.Text,
+	}
+}

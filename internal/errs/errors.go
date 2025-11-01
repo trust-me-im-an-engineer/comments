@@ -5,5 +5,6 @@ import (
 )
 
 var (
-	PostNotFound = errors.New("post not found")
+	PostNotFound    = errors.New("post not found")
+	CommentNotFound = errors.New("comment not found")
 )

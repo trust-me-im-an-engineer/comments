@@ -109,3 +109,10 @@ func ValidateCreateCommentInput(in model.CreateCommentInput) error {
 	}
 	return nil
 }
+
+func ValidateUpdateCommentInput(in model.UpdateCommentInput) error {
+	if _, err := strconv.Atoi(in.ID); err != nil {
+		return InvalidIDErr
+	}
+	return validateCommentText(in.Text)
+}

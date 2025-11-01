@@ -12,6 +12,14 @@ type Service struct {
 	storage storage.Storage
 }
 
+func (s *Service) UpdateComment(ctx context.Context, domainInput *domain.UpdateCommentInput) (*domain.Comment, error) {
+	comment, err := s.storage.UpdateComment(ctx, domainInput)
+	if err != nil {
+		return nil, fmt.Errorf("storage failed to update comment: %w", err)
+	}
+	return comment, nil
+}
+
 func (s *Service) CreateComment(ctx context.Context, domainInput *domain.CreateCommentInput) (*domain.Comment, error) {
 	comment, err := s.storage.CreateComment(ctx, domainInput)
 	if err != nil {
